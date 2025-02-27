@@ -1,3 +1,53 @@
+module MultiPlexer32to1 (
+    input [4:0] S,         // 5-bit selection input
+    input [31:0] I [31:0], // 32 inputs, each 32-bit wide
+    output reg [31:0] P    // 32-bit output
+);
+
+    always @(*) begin
+        case (S)
+            5'b00000: P = I[0];
+            5'b00001: P = I[1];
+            5'b00010: P = I[2];
+            5'b00011: P = I[3];
+            5'b00100: P = I[4];
+            5'b00101: P = I[5];
+            5'b00110: P = I[6];
+            5'b00111: P = I[7];
+            5'b01000: P = I[8];
+            5'b01001: P = I[9];
+            5'b01010: P = I[10];
+            5'b01011: P = I[11];
+            5'b01100: P = I[12];
+            5'b01101: P = I[13];
+            5'b01110: P = I[14];
+            5'b01111: P = I[15];
+            5'b10000: P = I[16];
+            5'b10001: P = I[17];
+            5'b10010: P = I[18];
+            5'b10011: P = I[19];
+            5'b10100: P = I[20];
+            5'b10101: P = I[21];
+            5'b10110: P = I[22];
+            5'b10111: P = I[23];
+            5'b11000: P = I[24];
+            5'b11001: P = I[25];
+            5'b11010: P = I[26];
+            5'b11011: P = I[27];
+            5'b11100: P = I[28];
+            5'b11101: P = I[29];
+            5'b11110: P = I[30];
+            5'b11111: P = I[31];
+        endcase
+    end
+
+endmodule
+
+
+
+
+
+
 module multiPlexer (output reg [31:0] P, 
                     input [31:0] R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15,R16,R17,R18,R19,R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31,
                     input [4:0] S);
