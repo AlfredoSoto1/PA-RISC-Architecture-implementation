@@ -11,8 +11,8 @@ module OperandHandler (
     wire [31:0] shift_right_arith;
     wire [31:0] shift_left_logic;
 
-    assign low_sign_ext_11 = {{21{I[10]}}, I[0], I[10:1]}; // low-sign-extend
-    assign low_sign_ext_14 = {{18{I[13]}}, I[0], I[12:0]}; // low-sign-extend
+    assign low_sign_ext_11 = {{22{I[0]}}, I[10:1]};        // Sign-extend I[10:0] to 32 bits
+    assign low_sign_ext_14 = {{19{I[0]}}, I[13:1]};        // Sign-extend I[13:0] to 32 bits
     
     assign shift_amt = 31 - I[9:5];
     assign shift_right_logic = RB >> shift_amt;            // Logical shift right
@@ -55,7 +55,8 @@ module OperandHandler_TEST;
 
         // Assign initial values to inputs
         RB = 32'b10000100001100011111111111101011;
-        I  = 21'b100000100011101100001;
+        I  = 21'b100000100011101100001;    // From OH new version
+        // I  = 21'b100000100011011000001; // From OH in RAM PDF (Must Check)
 
         // Monitor changes to the output
         $monitor("S = %b -> N = %b", S, N);

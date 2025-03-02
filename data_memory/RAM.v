@@ -2,7 +2,7 @@ module ram256x8 (
     output reg [31:0] DataOut,
     input Enable,
     input ReadWrite,  // 0: Read, 1: Write
-    input [6:0] Address,
+    input [7:0] Address,
     input [1:0] Size, // 00: byte, 01: halfword, 10: word
     input [31:0] DataIn
 );
@@ -27,7 +27,7 @@ module ram256x8 (
     end
 
     always @(posedge Enable) begin
-        if (ReadWrite) begin // Write
+        if (ReadWrite && Enable) begin // Write
             case (Size)
                 2'b00: Mem[Address] <= DataIn[7:0]; // Byte
                 2'b01: begin // Halfword (big-endian)

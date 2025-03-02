@@ -8,7 +8,7 @@ module ALU (
     output reg Z, N, C, V   // 4-bit flag register
 );
 
-    reg [32:0] temp; // Temporary register to store extended sum for carry
+    reg [32:0] temp = 33'h0; // Temporary register to store extended sum for carry
 
     always @(*) begin
         case (OP)
@@ -16,7 +16,7 @@ module ALU (
             4'b0001: temp = A + B + Ci;  // (With flags) Addition with carry
             4'b0010: temp = A - B;       // (With flags) Subtraction
             4'b0011: temp = A - B - Ci;  // (With flags) Subtraction with carry
-            4'b0100: Out = B - A;        // Subtraction flipped
+            4'b0100: temp = B - A;       // Subtraction flipped
             4'b0101: Out = A | B;        // OR
             4'b0110: Out = A ^ B;        // XOR
             4'b0111: Out = A & B;        // AND
@@ -26,15 +26,38 @@ module ALU (
             default: Out = 32'h00000000; // Default case
         endcase
         
-        // Provide result for the first 4 OP-code
-        if (OP == 4'b0000 || OP == 4'b0001 || OP == 4'b0010 || OP == 4'b0011) begin
-            Out = temp[31:0];                          // Pass out the operation result
-            C = temp[32];                              // Carry/Borrow for unsigned numbers
-            V = (OP == 4'b0000 || OP == 4'b0001) ?     // Overflow bit for sign numbers
-                ~(A[31] ^ B[31]) & (A[31] ^ Out[31]) : // Overflow for sum
-                 (A[31] ^ B[31]) & (A[31] ^ Out[31]);  // Overflow for sub
-        end
-
+        // Set to zero if OP doesnt match if condition
+        V = 0; // Always set to zero
+        C = 0; // Always set to zero
+        
+        // Handle OutCarry for arigmethic operations
+        case (OP)
+            4'b0000: begin
+                Out = temp[31:0]; // Pass out the operation result
+                C = temp[32];  
+                V = (~(A[31] ^ B[31])) & (A[31] ^ Out[31]); // Overflow for sum
+            end
+            4'b0001: begin
+                Out = temp[31:0]; // Pass out the operation result
+                C = temp[32];
+                V = (~(A[31] ^ B[31])) & (A[31] ^ Out[31]); // Overflow for sum
+            end
+            4'b0010: begin
+                Out = temp[31:0]; // Pass out the operation result
+                C = (A < B) ? 1 : 0;
+                V = (A[31] ^ B[31]) & (A[31] ^ Out[31]); // Overflow for sub
+            end
+            4'b0011: begin
+                Out = temp[31:0]; // Pass out the operation result
+                C = (A < (B + Ci)) ? 1 : 0;
+                V = (A[31] ^ B[31]) & (A[31] ^ Out[31]); // Overflow for sub
+            end
+            4'b0100: begin
+                Out = temp[31:0]; // Pass out the operation result
+                C = (A > B) ? 1 : 0;
+            end
+        endcase
+        
         Z = (Out == 32'h00000000) ? 1 : 0; // Zero flag
         N = Out[31];                       // Sign flag
     end
@@ -48,7 +71,7 @@ module ALU_TEST;
     wire [31:0] Out;
     wire Z, N, C, V;
 
-    ALU uut (
+    ALU alu (
         .A(A),
         .B(B),
         .Ci(Ci),
@@ -69,24 +92,23 @@ module ALU_TEST;
         
         A = 32'b10011100000000000000000000111000;
         B = 32'b01110000000000000000000000000011;
-        Ci = 0;
-        OP = 4'b0000;
 
-        // Increment OP every 2 time units
-        repeat (11) begin
-            #2 OP = OP + 1;
+        // First run with Ci = 0
+        Ci = 0;
+        for (OP = 4'b0000; OP <= 4'b1010; OP = OP + 1) begin
+            #2;
         end
 
         $display("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         $display("| Time |  OP  |       A      |               A(bin)             |       B      |               B(bin)             |      Out     |           Out(bin)               | Z | N | C | V |");
         $display("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
+        // Second run with Ci = 0
         Ci = 1;
-        OP = 4'b0000;
-        repeat (3) begin
-            #2 OP = OP + 1;
+        for (OP = 4'b0000; OP < 4'b0011; OP = OP + 1) begin
+            #2;
         end
-        
+
         #2 $finish;
     end
     
