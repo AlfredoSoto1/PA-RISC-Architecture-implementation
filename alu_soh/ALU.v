@@ -73,7 +73,7 @@ module ALU_TEST;
         OP = 4'b0000;
 
         // Increment OP every 2 time units
-        repeat (10) begin
+        repeat (11) begin
             #2 OP = OP + 1;
         end
 

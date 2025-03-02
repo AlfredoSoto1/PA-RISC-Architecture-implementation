@@ -11,8 +11,8 @@ module OperandHandler (
     wire [31:0] shift_right_arith;
     wire [31:0] shift_left_logic;
 
-    assign low_sign_ext_11 = {{21{I[10]}}, I[9:0]};        // Sign-extend I[10:0] to 32 bits
-    assign low_sign_ext_14 = {{18{I[13]}}, I[12:0]};       // Sign-extend I[13:0] to 32 bits
+    assign low_sign_ext_11 = {{21{I[10]}}, I[0], I[10:1]}; // low-sign-extend
+    assign low_sign_ext_14 = {{18{I[13]}}, I[0], I[12:0]}; // low-sign-extend
     
     assign shift_amt = 31 - I[9:5];
     assign shift_right_logic = RB >> shift_amt;            // Logical shift right
@@ -24,7 +24,7 @@ module OperandHandler (
             3'b000: N = RB;
             3'b001: N = low_sign_ext_11;
             3'b010: N = low_sign_ext_14;
-            3'b011: N = {I[20:0], 11'b0};  // Zero ext
+            3'b011: N = {I[20:0], 11'b0};
             3'b100: N = shift_right_logic;
             3'b101: N = shift_right_arith;
             3'b110: N = shift_left_logic;
