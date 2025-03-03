@@ -1,10 +1,12 @@
-module Register32_TEST;
+`include "REGISTER.v"
+
+module REGISTER3232_tb;
+    wire [31:0] Q;
     reg [31:0] D; 
     reg LE, Clr, Clk;
-    wire [31:0] Q;
     
     // Instantiate the Register32 module
-    Register32 uut (
+    REGISTER32 reg0 (
         .Q(Q),
         .D(D),
         .LE(LE),
@@ -44,6 +46,6 @@ module Register32_TEST;
         Clr = 0; LE = 1; D = 32'h12345678;
         #10;
         $display("Test 5 - Load New: Q = %h (Expected: 12345678)", Q);
-        $stop;
+        $finish;
     end
 endmodule

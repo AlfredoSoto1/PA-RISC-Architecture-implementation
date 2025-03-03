@@ -1,9 +1,11 @@
-module binaryDecoder (
-    output reg [31:0] O,
-    input [4:0] D,
-    input E
+module DECODER5x32 (
+    output reg [31:0] O, // 32-bit output
+    input [4:0] D,       // 5-bit input
+    input E              // Enable input
 );
     always @* begin
+        // If enable is 0, output is 0
+        // Otherwise, output is 2^D
         if (E == 0) 
             O = 32'b0;
         else begin

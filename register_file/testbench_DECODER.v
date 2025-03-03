@@ -1,17 +1,18 @@
-module binaryDecoder_tb;
+`include "DECODER.v"
+
+module DECODER_tb;
     reg [4:0] D;
     reg E;
     wire [31:0] O;
 
     // Instantiate the binaryDecoder module
-    binaryDecoder uut (
+    DECODER5x32 decoder (
         .O(O),
         .D(D),
         .E(E)
     );
 
     initial begin
-        // Monitor values
         $monitor("E = %b, D = %b, O = %b", E, D, O);
 
         // Test case 1: Enable is 0, output should be 0
@@ -32,8 +33,6 @@ module binaryDecoder_tb;
 
         // Test case 4: Invalid values (not necessary for 5-bit input, but added for completeness)
         D = 5'bxxxxx; #10;
-
-        // End simulation
         $finish;
     end
 endmodule
