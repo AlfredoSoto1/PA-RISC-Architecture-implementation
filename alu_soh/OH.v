@@ -72,6 +72,6 @@ module OperandHandler_TEST;
         S = 3'b111; #10;
 
         // End simulation
-        $stop;
+        $finish;
     end
 endmodule
