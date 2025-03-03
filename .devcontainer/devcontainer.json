@@ -1,0 +1,11 @@
+{
+  "name": "Verilog Dev Container",
+  "image": "verilog-sim",
+  "workspaceFolder": "/verilog",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/verilog,type=bind"
+  ],
+  "extensions": [
+    "ms-vscode.vscode-verilog-hdl"
+  ]
+}

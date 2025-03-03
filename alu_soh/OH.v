@@ -42,7 +42,7 @@ module OperandHandler_TEST;
     reg [2:0] S;
     wire [31:0] N;
 
-    OperandHandler uut (
+    OperandHandler oh (
         .RB(RB),
         .I(I),
         .S(S),
