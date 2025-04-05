@@ -25,9 +25,8 @@ module ram256x8 (
                 default: DataOut = 32'b0;
             endcase
         end
-    end
 
-    always @(posedge Enable) begin
+   // always @(posedge Enable) begin
         // Write to memory if ReadWrite is enabled
         // use bigendian as manual suggests
         if (ReadWrite && Enable) begin
