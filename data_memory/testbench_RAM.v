@@ -46,16 +46,16 @@ module RAM_tb;
 
         // Writing on memory
         Enable = 1'b1;    // Enabled
-        ReadWrite = 1'b1; // Read/write enabled
+        ReadWrite = 1'b1; // Read/write 
         $display("\nWriting data to memory...");
 
         Size = 2'b00; // Write as byte
-        Address = 8'd0; DataIn = 32'hA6; #1;
-        Address = 8'd2; DataIn = 32'hDD; #1;
+        Address = 8'd0; DataIn = 8'hA6; #1;
+        Address = 8'd2; DataIn = 8'hDD; #1;
 
         Size = 2'b01; // Write as halfword
-        Address = 8'd4; DataIn = 32'hABCD; #1;
-        Address = 8'd6; DataIn = 32'hEF01; #1;
+        Address = 8'd4; DataIn = 16'hABCD; #1;
+        Address = 8'd6; DataIn = 16'hEF01; #1;
 
         Size = 2'b10; // Write as word
         Address = 8'd12; DataIn = 32'h33445566; #1;
