@@ -55,8 +55,8 @@ module OperandHandler_TEST;
 
         // Assign initial values to inputs
         RB = 32'b10000100001100011111111111101011;
-        // I  = 21'b100000100011101100001;  // From OH new version
-        I  = 21'b100000100011011000001;  // From OH in RAM PDF (Must Check)
+        I  = 21'b100000100011101100001;  // From OH new version
+        // I  = 21'b100000100011011000001;  // From OH in RAM PDF (Must Check)
 
         // Monitor changes to the output
         $monitor("S = %b -> N = %b", S, N);
