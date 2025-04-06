@@ -1,96 +1,127 @@
-module id_ex(
-    input wire clk,
-    input wire reset,
-    input wire LE,
+module ID_EX_REG (
+    input wire clk, reset, load_enable,
 
-    //Register outputs and offset 
+    // Instruction/control inputs
     input wire [31:0] PA, PB, PD,
-    input wire [31:0] offset,
+    input wire [31:0] Offset,
 
-    //Control signals
-    input wire [20:0] ctrl_in,
-    output reg [31:0] PA_EX, PB_EX, PD_EX, Offset_EX,
-    output reg [20:0] ctrl_EX,
+    // Control signals from mux
+    input wire [1:0] SRD_in,
+    input wire [1:0] PSW_LE_RE_in,
+    input wire B_in,
+    input wire [2:0] SOH_OP_in,
+    input wire [3:0] ALU_OP_in,
+    input wire [3:0] RAM_CTRL_in,
+    input wire L_in,
+    input wire RF_LE_in,
+    input wire [1:0] ID_SR_in,
+    input wire UB_in,
+
+    // Outputs to EX stage
+    output reg [31:0] PA_out, PB_out, PD_out,
+    output reg [31:0] Offset_out,
+
+    output reg [1:0] SRD_out,
+    output reg [1:0] PSW_LE_RE_out,
+    output reg B_out,
+    output reg [2:0] SOH_OP_out,
+    output reg [3:0] ALU_OP_out,
+    output reg [3:0] RAM_CTRL_out,
+    output reg L_out,
+    output reg RF_LE_out,
+    output reg [1:0] ID_SR_out,
+    output reg UB_out
 );
 
     always @(posedge clk) begin
         if (reset) begin
-            PA_EX <= 0;
-            PB_EX <= 0;
-            PD_EX <= 0;
-            Offset_EX <= 0;
-            ctrl_EX <= 0;
-        end else if (LE) begin
-            PA_EX <= PA;
-            PB_EX <= PB;
-            PD_EX <= PD;
-            Offset_EX <= offset;
-            ctrl_EX <= ctrl_in;
+            PA_out <= 0; PB_out <= 0; PD_out <= 0;
+            Offset_out <= 0;
+
+            SRD_out <= 0;
+            PSW_LE_RE_out <= 0;
+            B_out <= 0;
+            SOH_OP_out <= 0;
+            ALU_OP_out <= 0;
+            RAM_CTRL_out <= 0;
+            L_out <= 0;
+            RF_LE_out <= 0;
+            ID_SR_out <= 0;
+            UB_out <= 0;
+        end else if (load_enable) begin
+            PA_out <= PA; PB_out <= PB; PD_out <= PD;
+            Offset_out <= Offset;
+
+            SRD_out <= SRD_in;
+            PSW_LE_RE_out <= PSW_LE_RE_in;
+            B_out <= B_in;
+            SOH_OP_out <= SOH_OP_in;
+            ALU_OP_out <= ALU_OP_in;
+            RAM_CTRL_out <= RAM_CTRL_in;
+            L_out <= L_in;
+            RF_LE_out <= RF_LE_in;
+            ID_SR_out <= ID_SR_in;
+            UB_out <= UB_in;
         end
     end
-
 endmodule
 
-module EX_MEM (
-    input wire clk,
-    input wire reset,
-    input wire LE,
 
-    input wire [31:0] ALU_OUT,
-    input wire [31:0] STORE_DATA,
-    input wire [4:0] DEST_REG, // optional?
-    input wire [4:0] RAM_CTRL,
+module EX_MEM_REG (
+    input wire clk, reset, load_enable,
+
+    input wire [31:0] ALU_result,
+    input wire [31:0] PB, // Store data
+    input wire [4:0] dest_reg,
+    input wire [3:0] RAM_CTRL,
     input wire RF_LE,
 
-    output reg [31:0] ALU_OUT_MEM,
-    output reg [31:0] STORE_DATA_MEM,
-    output reg [4:0] DEST_REG_MEM,
-    output reg [4:0] RAM_CTRL_MEM,
-    output reg RF_LE_MEM
+    output reg [31:0] ALU_result_out,
+    output reg [31:0] PB_out,
+    output reg [4:0] dest_reg_out,
+    output reg [3:0] RAM_CTRL_out,
+    output reg RF_LE_out
 );
 
     always @(posedge clk) begin
         if (reset) begin
-            ALU_OUT_MEM <= 0;
-            STORE_DATA_MEM <= 0;
-            DEST_REG_MEM <= 0;
-            RAM_CTRL_MEM <= 0;
-            RF_LE_MEM <= 0;
-        end else if (LE) begin
-            ALU_OUT_MEM <= ALU_OUT;
-            STORE_DATA_MEM <= STORE_DATA;
-            DEST_REG_MEM <= DEST_REG;
-            RAM_CTRL_MEM <= RAM_CTRL;
-            RF_LE_MEM <= RF_LE;
+            ALU_result_out <= 0;
+            PB_out <= 0;
+            dest_reg_out <= 0;
+            RAM_CTRL_out <= 0;
+            RF_LE_out <= 0;
+        end else if (load_enable) begin
+            ALU_result_out <= ALU_result;
+            PB_out <= PB;
+            dest_reg_out <= dest_reg;
+            RAM_CTRL_out <= RAM_CTRL;
+            RF_LE_out <= RF_LE;
         end
     end
-
 endmodule
 
-module MEM_WB (
-    input wire clk,
-    input wire reset,
-    input wire LE,
 
-    input wire [31:0] WRITE_DATA,
-    input wire [4:0] DEST_REG,
+module MEM_WB_REG (
+    input wire clk, reset, load_enable,
+
+    input wire [4:0] dest_reg,
+    input wire [31:0] write_data,
     input wire RF_LE,
 
-    output reg [31:0] WRITE_DATA_WB,
-    output reg [4:0] DEST_REG_WB,
-    output reg RF_LE_WB
+    output reg [4:0] dest_reg_out,
+    output reg [31:0] write_data_out,
+    output reg RF_LE_out
 );
 
     always @(posedge clk) begin
         if (reset) begin
-            WRITE_DATA_WB <= 0;
-            DEST_REG_WB <= 0;
-            RF_LE_WB <= 0;
-        end else if (LE) begin
-            WRITE_DATA_WB <= WRITE_DATA;
-            DEST_REG_WB <= DEST_REG;
-            RF_LE_WB <= RF_LE;
+            dest_reg_out <= 0;
+            write_data_out <= 0;
+            RF_LE_out <= 0;
+        end else if (load_enable) begin
+            dest_reg_out <= dest_reg;
+            write_data_out <= write_data;
+            RF_LE_out <= RF_LE;
         end
     end
-
 endmodule
