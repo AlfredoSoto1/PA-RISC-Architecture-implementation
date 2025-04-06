@@ -1,16 +1,128 @@
 module CONTROL_UNIT (
-    input wire [31:0] instruction, // 32-bit instruction input
-    output logic [1:0] SRD,        // 2-bit Select target register
-    output logic [1:0] PSW_LE_RE,  // 2-bit PSW Load / Read Enable
-    output logic B,                // Branch
-    output logic [2:0] SOH_OP,     // 3-bit Operand handler opcode
-    output logic [3:0] ALU_OP,     // 4-bit ALU opcode
-    output logic [3:0] RAM_CTRL,   // 4-bit Ram control
-    output logic L,                // Select Dataout from RAM
-    output logic RF_LE,            // Register File Load Enable
-    output logic [1:0] ID_SR,      // 2-bit Instruction Decode Shift Register
-    output logic UB,               // Unconditional Branch
+    input  logic [31:0] instruction, // 32-bit instruction input
+    output logic [1:0] SRD,          // 2-bit Select target register
+    output logic [1:0] PSW_LE_RE,    // 2-bit PSW Load / Read Enable
+    output logic B,                  // Branch
+    output logic [2:0] SOH_OP,       // 3-bit Operand handler opcode
+    output logic [3:0] ALU_OP,       // 4-bit ALU opcode
+    output logic [3:0] RAM_CTRL,     // 4-bit Ram control
+    output logic L,                  // Select Dataout from RAM
+    output logic RF_LE,              // Register File Load Enable
+    output logic [1:0] ID_SR,        // 2-bit Instruction Decode Shift Register
+    output logic UB                  // Unconditional Branch
 );
+    // Second Opcode select for ALU operations
+    task  set_alu_op(input [5:6] op2);
+    begin
+        // OP2 for ALU operations
+        case (op2) 
+            6'b011000: begin    // ADD
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b01;  // Load enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0000;   // A + B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b011100: begin    // ADDC
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b11;  // Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0001;   // A + B + Ci
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b101000: begin    // ADDL
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b00;  // NO Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0000;   // A + B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b010000: begin    // SUB
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b01;  // Load enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0010;   // A - B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b010100: begin    // SUBB
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b11;  // Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0011;   // A - B - Ci
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b001001: begin    // OR
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b00;  // NO Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0101;   // A | B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+            6'b001010: begin    // XOR
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b00;  // NO Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0110;   // A ^ B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+
+            6'b001000: begin    // AND
+            SRD = 2'b00;        // Select destination register
+            PSW_LE_RE = 2'b00;  // NO Load & write enabled
+            B = 0;              // No branch
+            SOH_OP = 3'b000;    // Pass through
+            ALU_OP = 4'b0111;   // A & B
+            RAM_CTRL = 4'b0000; // No RAM operation
+            L = 0;              // No load
+            RF_LE = 1;          // Load result into register
+            ID_SR = 2'b11;      // Both registers are in use
+            UB = 0;             // No unconditional branch
+            end
+        endcase
+    end
+    endtask
+
+
     always @* begin
         // Default all signals to 0 (NOP behavior)
         SRD = 2'b00;
@@ -27,110 +139,9 @@ module CONTROL_UNIT (
         // If instruction is NOP (all bits zero), keep signals at 0
         if (instruction != 32'h00000000) begin
             case (instruction[31:26])  // 6-bit opcode field
-                6'b011000: begin    // ADD
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b01;  // Load enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0000;   // A + B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
+                6'b000010: begin // Three Register Arithmetic & Logical Instructions
+                set_alu_op(instruction[11:6]);
                 end
-
-                6'b011100: begin    // ADDC
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b11;  // Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0001;   // A + B + Ci
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-                6'b101000: begin    // ADDL
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b00;  // NO Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0000;   // A + B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-                6'b010000: begin    // SUB
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b01;  // Load enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0010;   // A - B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-                6'b010100: begin    // SUBB
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b11;  // Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0011;   // A - B - Ci
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-                6'b001001: begin    // OR
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b00;  // NO Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0101;   // A | B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-                6'b001010: begin    // XOR
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b00;  // NO Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0110;   // A ^ B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-                6'b001000: begin    // AND
-                SRD = 2'b00;        // Select destination register
-                PSW_LE_RE = 2'b00;  // NO Load & write enabled
-                B = 0;              // No branch
-                SOH_OP = 3'b000;    // Pass through
-                ALU_OP = 4'b0111;   // A & B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b11;      // Both registers are in use
-                UB = 0;             // No unconditional branch
-                end
-
-
                 6'b000000: begin // LDW
                 end
                 6'b000000: begin // LDH
