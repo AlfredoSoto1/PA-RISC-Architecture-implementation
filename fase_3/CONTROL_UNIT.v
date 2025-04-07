@@ -12,7 +12,7 @@ module CONTROL_UNIT (
     output reg UB                // Unconditional Branch
 );
     // Second Opcode select for ALU operations
-    task  set_alu_op(input [5:6] op2);
+    task  set_alu_op(input [5:0] op2);
     begin
         // OP2 for ALU operations
         case (op2) 
