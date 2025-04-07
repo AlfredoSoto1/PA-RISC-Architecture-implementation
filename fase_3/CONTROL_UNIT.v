@@ -1,15 +1,15 @@
 module CONTROL_UNIT (
-    input  logic [31:0] instruction, // 32-bit instruction input
-    output logic [1:0] SRD,          // 2-bit Select target register
-    output logic [1:0] PSW_LE_RE,    // 2-bit PSW Load / Read Enable
-    output logic B,                  // Branch
-    output logic [2:0] SOH_OP,       // 3-bit Operand handler opcode
-    output logic [3:0] ALU_OP,       // 4-bit ALU opcode
-    output logic [3:0] RAM_CTRL,     // 4-bit Ram control
-    output logic L,                  // Select Dataout from RAM
-    output logic RF_LE,              // Register File Load Enable
-    output logic [1:0] ID_SR,        // 2-bit Instruction Decode Shift Register
-    output logic UB                  // Unconditional Branch
+    input [31:0] instruction,    // 32-bit instruction input
+    output reg [1:0] SRD,        // 2-bit Select target register
+    output reg [1:0] PSW_LE_RE,  // 2-bit PSW Load / Read Enable
+    output reg B,                // Branch
+    output reg [2:0] SOH_OP,     // 3-bit Operand handler opcode
+    output reg [3:0] ALU_OP,     // 4-bit ALU opcode
+    output reg [3:0] RAM_CTRL,   // 4-bit Ram control
+    output reg L,                // Select Dataout from RAM
+    output reg RF_LE,            // Register File Load Enable
+    output reg [1:0] ID_SR,      // 2-bit Instruction Decode Shift Register
+    output reg UB                // Unconditional Branch
 );
     // Second Opcode select for ALU operations
     task  set_alu_op(input [5:6] op2);
@@ -17,7 +17,7 @@ module CONTROL_UNIT (
         // OP2 for ALU operations
         case (op2) 
             6'b011000: begin    // ADD
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b01;  // Load enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -30,7 +30,7 @@ module CONTROL_UNIT (
             end
 
             6'b011100: begin    // ADDC
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b11;  // Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -43,7 +43,7 @@ module CONTROL_UNIT (
             end
 
             6'b101000: begin    // ADDL
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -56,7 +56,7 @@ module CONTROL_UNIT (
             end
 
             6'b010000: begin    // SUB
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b01;  // Load enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -69,7 +69,7 @@ module CONTROL_UNIT (
             end
 
             6'b010100: begin    // SUBB
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b11;  // Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -82,7 +82,7 @@ module CONTROL_UNIT (
             end
 
             6'b001001: begin    // OR
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -94,7 +94,7 @@ module CONTROL_UNIT (
             UB = 0;             // No unconditional branch
             end
             6'b001010: begin    // XOR
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -107,7 +107,7 @@ module CONTROL_UNIT (
             end
 
             6'b001000: begin    // AND
-            SRD = 2'b00;        // Select destination register
+            SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
             B = 0;              // No branch
             SOH_OP = 3'b000;    // Pass through
@@ -142,24 +142,113 @@ module CONTROL_UNIT (
                 6'b000010: begin // Three Register Arithmetic & Logical Instructions
                 set_alu_op(instruction[11:6]);
                 end
-                6'b000000: begin // LDW
+
+                6'b010010: begin    // LDW
+                SRD = 2'b10;        // I[20:16] 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im4)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im4)
+                RAM_CTRL = 4'b1001; // (10) Read word (0)WB (1)E 
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b10;      // Use register 'b' 
+                UB = 0;             // No unconditional branch  
                 end
-                6'b000000: begin // LDH
+
+                6'b010001: begin    // LDH
+                SRD = 2'b10;        // I[20:16] 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im4)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im4)
+                RAM_CTRL = 4'b0101; // (01) Read word (0)WB (1)E
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b10;      // Use register 'b' 
+                UB = 0;             // No unconditional branch  
                 end
-                6'b000000: begin // LDB
+
+                6'b010000: begin    // LDB
+                SRD = 2'b10;        // I[20:16] 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im14)
+                RAM_CTRL = 4'b0001; // (00) Read word (0)WB (1)E
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b10;      // Use register 'b' 
+                UB = 0;             // No unconditional branch 
                 end
-                6'b000000: begin // LDO
+
+                6'b001101: begin    // LDO
+                SRD = 2'b10;        // I[20:16]
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im14)
+                RAM_CTRL = 4'b0000; // (00) write word (0)WB (0)E
+                L = 0;              // N/A
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b01;      // Using register 'a' 
+                UB = 0;             // No unconditional branch 
                 end
-                6'b000000: begin // LDIL
+
+                6'b001000: begin    // LDIL
+                SRD = 2'b01;        // I[25:21]
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b011;    // {I[20:0], 00000000000}
+                ALU_OP = 4'b1010;   // Pass B
+                RAM_CTRL = 4'b0000; // (00) write word (0)WB (0)E
+                L = 0;              // N/A
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b00;      // N/A 
+                UB = 0;             // No unconditional branch
                 end
-                6'b000000: begin // STW
+
+                6'b011010: begin    // STW
+                SRD = 2'b11;        // N/A 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im14)
+                RAM_CTRL = 4'b1011; // (10) write word (1)WB (1)E
+                L = 0;              // N/A
+                RF_LE = 0;          // N/A 
+                ID_SR = 2'b11;      // Both registers 
+                UB = 0;             // No unconditional branch 
                 end
-                6'b000000: begin // STH
+                
+                6'b011001: begin    // STH
+                SRD = 2'b11;        // N/A 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im14)
+                RAM_CTRL = 4'b0111; // (01) write half (1)WB (1)E
+                L = 0;              // N/A
+                RF_LE = 0;          // N/A 
+                ID_SR = 2'b11;      // Both registers 
+                UB = 0;             // No unconditional branch 
                 end
-                6'b000000: begin // STB
+                
+                6'b011000: begin    // STB
+                SRD = 2'b11;        // N/A 
+                PSW_LE_RE = 2'b00;  // N/A 
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // A + low_sign_ext(im14)
+                RAM_CTRL = 4'b0011; // (00) write byte (1)WB (1)E
+                L = 0;              // N/A
+                RF_LE = 0;          // N/A 
+                ID_SR = 2'b11;      // Both registers 
+                UB = 0;             // No unconditional branch 
                 end
+                
                 6'b111010: begin    // BL
-                SRD = 2'b01;        // Select destination register
+                SRD = 2'b01;        // I[25:21]
                 PSW_LE_RE = 2'b00;  // N/A
                 B = 1;              // Branch
                 SOH_OP = 3'b000;    // N/A
@@ -198,7 +287,7 @@ module CONTROL_UNIT (
                 end
 
                 6'b101101: begin    // ADDI
-                SRD = 2'b10;        // Select destination register
+                SRD = 2'b10;        // I[20:16]
                 PSW_LE_RE = 2'b01;  // Load enabled
                 B = 0;              // No branch
                 SOH_OP = 3'b001;    // low_sign_ext(im11)
@@ -211,7 +300,7 @@ module CONTROL_UNIT (
                 end
 
                 6'b100101: begin    // SUBI
-                SRD = 2'b10;        // Select destination register
+                SRD = 2'b10;        // I[20:16]
                 PSW_LE_RE = 2'b01;  // Load enabled
                 B = 0;              // No branch
                 SOH_OP = 3'b001;    // low_sign_ext(im11)
@@ -221,12 +310,6 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Load result into register
                 ID_SR = 2'b01;      // A register in use
                 UB = 0;             // No unconditional branch
-                end
-                6'b000000: begin // EXTRU
-                end
-                6'b000000: begin // EXTRS
-                end
-                6'b000000: begin // ZDEP
                 end
 
                 default: ; // unknown opcode → no control
