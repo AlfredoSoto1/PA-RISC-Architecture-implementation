@@ -106,6 +106,116 @@ module CONTROL_UNIT (
             UB = 0;             // No unconditional branch
             end
 
+                6'b001000: begin    // AND
+                SRD = 2'b00;        // Select destination register
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b000;    // Pass through
+                ALU_OP = 4'b0111;   // A & B
+                RAM_CTRL = 4'b0000; // No RAM operation
+                L = 0;              // No load
+                RF_LE = 1;          // Load result into register
+                ID_SR = 2'b11;      // Both registers are in use
+                UB = 0;             // No unconditional branch
+                end
+
+
+                6'b010010: begin    // LDW
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1000;   // Pass memory data
+                RAM_CTRL = 4'b0110; // Read word 
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b01;      // Use register 'b' 
+                UB = 0;             // No unconditional branch  
+                end
+                6'b010001: begin    // LDH
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1001;   // Handle half word 
+                RAM_CTRL = 4'b0101; // Read half word 
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b01;      // Use register 'b' 
+                UB = 0;             // No unconditional branch
+                end
+                6'b010000: begin    // LDB
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1010;   // Handle byte
+                RAM_CTRL = 4'b0110; // Read byte
+                L = 1;              // Select RAM output 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b01;      // Use register 'b' 
+                UB = 0;             // No unconditional branch
+                end
+                6'b001101: begin    // LDO
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b001;    // low_sign_ext(im14)
+                ALU_OP = 4'b0000;   // Addition (GR[b] + displacement)
+                RAM_CTRL = 4'b0000; // No RAM operation  
+                L = 0;              // No load 
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b01;      // Use register 'b' 
+                UB = 0;             // No unconditional branch
+                end
+                6'b001000: begin    // LDIL
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b100;    // Concatenate im21 with 11 zeros
+                ALU_OP = 4'b1110;   // Pass immediate value 
+                RAM_CTRL = 4'b0000; // No RAM operation  
+                L = 0;              // No load  
+                RF_LE = 1;          // Write to register 
+                ID_SR = 2'b00;      // No source register  
+                UB = 0;             // No unconditional branch
+                end
+                6'b011010: begin    // STW
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1011;   // Pass data from 'r' register 
+                RAM_CTRL = 4'b1110; // Write word  
+                L = 0;              // No load  
+                RF_LE = 0;          // No write to register 
+                ID_SR = 2'b11;      // Use both registers 
+                UB = 0;             // No unconditional branch
+                end
+                6'b011001: begin    // STH
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1100;   // Pass halfword
+                RAM_CTRL = 4'b1101; // Write halfword  
+                L = 0;              // No load 
+                RF_LE = 0;          // No write to register 
+                ID_SR = 2'b11;      // Use both registers  
+                UB = 0;             // No unconditional branch
+                end
+                6'b011000: begin // STB
+                SRD = 2'b00;        // Select destination register 
+                PSW_LE_RE = 2'b00;  // NO Load & write enabled
+                B = 0;              // No branch
+                SOH_OP = 3'b010;    // GR[b] + low_sign_ext(im4)
+                ALU_OP = 4'b1101;   // Pass byte
+                RAM_CTRL = 4'b1100; // Write byte  
+                L = 0;              // No load 
+                RF_LE = 0;          // No write to register 
+                ID_SR = 2'b11;      // Use both registers  
+                UB = 0;             // No unconditional branch
+                end
             6'b001000: begin    // AND
             SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
