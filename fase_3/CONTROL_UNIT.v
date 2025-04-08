@@ -304,7 +304,7 @@ module CONTROL_UNIT (
                 PSW_LE_RE = 2'b01;  // Load enabled
                 B = 0;              // No branch
                 SOH_OP = 3'b001;    // low_sign_ext(im11)
-                ALU_OP = 4'b0000;   // A + B
+                ALU_OP = 4'b0100;   // B - A
                 RAM_CTRL = 4'b0000; // No RAM operation
                 L = 0;              // No load
                 RF_LE = 1;          // Load result into register
