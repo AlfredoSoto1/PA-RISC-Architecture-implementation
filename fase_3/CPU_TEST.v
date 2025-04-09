@@ -110,9 +110,9 @@ module CPU_PIPELINE_tb;
     // Intermediate nets for monitoring
     wire [31:0] instr_out = instruction_out;
     wire [7:0] front_q_out_int = front_q_out;
-    wire [9:0] cu_signals = {SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out};
-    wire [9:0] ex_signals = {SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out, RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out};
-    wire [7:0] mem_signals = {RAM_CTRL_MEM_out, L_MEM_out, RF_LE_MEM_out};
+    wire [20:0] cu_signals = {SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out};
+    wire [20:0] ex_signals = {SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out, RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out};
+    wire [5:0] mem_signals = {RAM_CTRL_MEM_out, L_MEM_out, RF_LE_MEM_out};
     wire rf_le_wb_signal = RF_LE_WB_out;
 
     reg [63:0] instr_keyword;
@@ -159,10 +159,29 @@ module CPU_PIPELINE_tb;
     end
 
 
-    // Monitor the instruction and control signals
     initial begin
-      $monitor("Time=%0t | Instruction=%b | Opcode=%s | Front_q=%d | CU Signals=%b | EX Signals=%b | MEM Signals=%b | WB Signals=%b",
-                $time, instr_out, instr_keyword, front_q_out_int, cu_signals, ex_signals, mem_signals, rf_le_wb_signal);
+      $monitor("Current Time Unit = %0t\n\
+                Ins. = %s %b\n\
+                Front_q = %d\n\
+                ID_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b\n\
+                EX_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b\n\
+                MEM_STAGE:  RAM_CTRL = %b  L = %b  RF_LE = %b\n\
+                WB_STAGE:   RF_LE = %b\n",
+                    $time,
+                    instr_keyword, instr_out,
+                    front_q_out_int,
+
+                    // ID Stage
+                    SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out,
+
+                    // EX Stage
+                    SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out,RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out,
+
+                    // MEM Stage
+                    RAM_CTRL_MEM_out, L_MEM_out, RF_LE_MEM_out,
+
+                    // WB Stage
+                    RF_LE_WB_out);
     end
 
 endmodule
