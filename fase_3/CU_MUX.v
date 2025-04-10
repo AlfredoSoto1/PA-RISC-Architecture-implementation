@@ -11,6 +11,7 @@ module CU_MUX (
     input wire RF_LE_in,
     input wire [1:0] ID_SR_in,
     input wire UB_in,
+    input wire SHF_in,
 
     output reg [1:0] SRD_out,
     output reg [1:0] PSW_LE_RE_out,
@@ -21,7 +22,8 @@ module CU_MUX (
     output reg L_out,
     output reg RF_LE_out,
     output reg [1:0] ID_SR_out,
-    output reg UB_out
+    output reg UB_out,
+    output reg SHF_out
 );
 
     always @(*) begin
@@ -36,6 +38,7 @@ module CU_MUX (
             RF_LE_out = 1'b0;
             ID_SR_out = 2'b00;
             UB_out = 1'b0;
+            SHF_out = 1'b0;
         end else begin
             SRD_out = SRD_in;
             PSW_LE_RE_out = PSW_LE_RE_in;
@@ -47,6 +50,7 @@ module CU_MUX (
             RF_LE_out = RF_LE_in;
             ID_SR_out = ID_SR_in;
             UB_out = UB_in;
+            SHF_out = SHF_in;
         end
     end
 endmodule

@@ -21,6 +21,7 @@ module CPU_PIPELINE (
     output wire RF_LE_out,
     output wire [1:0] ID_SR_out,
     output wire UB_out,
+    output wire SHF_out,
 
     output wire [1:0] SRD_EX_out,
     output wire [1:0] PSW_LE_RE_EX_out,
@@ -32,6 +33,7 @@ module CPU_PIPELINE (
     output wire RF_LE_EX_out,
     output wire [1:0] ID_SR_EX_out,
     output wire UB_EX_out,
+    output wire SHF_EX_out,
 
     output wire [3:0] RAM_CTRL_MEM_out,
     output wire L_MEM_out,
@@ -99,6 +101,7 @@ module CPU_PIPELINE (
     wire RF_LE;                 // Register File Load Enable
     wire [1:0] ID_SR;           // 2-bit Instruction Decode Shift Register
     wire UB;                    // Unconditional Branch
+    wire SHF;                   // Shift
 
     wire [1:0] SRD_MUX;
     wire [1:0] PSW_LE_RE_MUX;
@@ -110,6 +113,7 @@ module CPU_PIPELINE (
     wire RF_LE_MUX;
     wire [1:0] ID_SR_MUX;
     wire UB_MUX;
+    wire SHF_MUX;
 
     CONTROL_UNIT control_unit (
         .instruction(instruction),
@@ -122,7 +126,8 @@ module CPU_PIPELINE (
         .L(L),           
         .RF_LE(RF_LE),   
         .ID_SR(ID_SR),   
-        .UB(UB)
+        .UB(UB),
+        .SHF(SHF)
     );
 
     CU_MUX cu_mux (
@@ -137,7 +142,8 @@ module CPU_PIPELINE (
         .L_in(L),
         .RF_LE_in(RF_LE),
         .ID_SR_in(ID_SR),
-        .UB_in(UB),
+        .UB_in(UB), 
+        .SHF_in(SHF), 
 
         .SRD_out(SRD_MUX),
         .PSW_LE_RE_out(PSW_LE_RE_MUX),
@@ -148,7 +154,8 @@ module CPU_PIPELINE (
         .L_out(L_MUX),
         .RF_LE_out(RF_LE_MUX),
         .ID_SR_out(ID_SR_MUX),
-        .UB_out(UB_MUX)
+        .UB_out(UB_MUX),
+        .SHF_out(SHF_MUX)
     );
 
     //
@@ -165,11 +172,11 @@ module CPU_PIPELINE (
     wire RF_LE_EX;
     wire [1:0] ID_SR_EX;
     wire UB_EX;
+    wire SHF_EX;
 
     ID_EX_REG id_ex_reg (
         .clk(Clk),
         .reset(Rst),
-        .load_enable(LE),
 
         // Control signals from mux
         .SRD_in(SRD_MUX),
@@ -182,6 +189,7 @@ module CPU_PIPELINE (
         .RF_LE_in(RF_LE_MUX),
         .ID_SR_in(ID_SR_MUX),
         .UB_in(UB_MUX),
+        .SHF_in(SHF_MUX),
 
         // Outputs to EX stage
         .SRD_out(SRD_EX),
@@ -193,7 +201,7 @@ module CPU_PIPELINE (
         .L_out(L_EX),
         .RF_LE_out(RF_LE_EX),
         .ID_SR_out(ID_SR_EX),
-        .UB_out(UB_EX)
+        .SHF_out(SHF_EX)
     );
 
     //
@@ -207,7 +215,6 @@ module CPU_PIPELINE (
     EX_MEM_REG ex_mem_reg (
         .clk(Clk),
         .reset(Rst),
-        .load_enable(LE),
 
         // Control signals from ID_EX_REG
         .RAM_CTRL_in(RAM_CTRL_EX),
@@ -229,7 +236,6 @@ module CPU_PIPELINE (
     MEM_WB_REG mem_wb_reg (
         .clk(Clk),
         .reset(Rst),
-        .load_enable(LE),
 
         // Control signals from EX_MEM_REG
         .RF_LE_in(RF_LE_MEM),
@@ -253,6 +259,7 @@ assign L_out = L_MUX;
 assign RF_LE_out = RF_LE_MUX;
 assign ID_SR_out = ID_SR_MUX;
 assign UB_out = UB_MUX;
+assign SHF_out = SHF_MUX;
 
 // EX stage
 assign SRD_EX_out = SRD_EX;
@@ -265,6 +272,7 @@ assign L_EX_out = L_EX;
 assign RF_LE_EX_out = RF_LE_EX;
 assign ID_SR_EX_out = ID_SR_EX;
 assign UB_EX_out = UB_EX;
+assign SHF_EX_out = SHF_EX;
 
 // MEM stage
 assign RAM_CTRL_MEM_out = RAM_CTRL_MEM;

@@ -22,6 +22,7 @@ module CPU_PIPELINE_tb;
     wire RF_LE_out;
     wire [1:0] ID_SR_out;
     wire UB_out;
+    wire SHF_out;
 
     wire [1:0] SRD_EX_out;
     wire [1:0] PSW_LE_RE_EX_out;
@@ -33,6 +34,7 @@ module CPU_PIPELINE_tb;
     wire RF_LE_EX_out;
     wire [1:0] ID_SR_EX_out;
     wire UB_EX_out;
+    wire SHF_EX_out;
 
     wire [3:0] RAM_CTRL_MEM_out;
     wire L_MEM_out;
@@ -61,6 +63,7 @@ module CPU_PIPELINE_tb;
         .RF_LE_out(RF_LE_out),
         .ID_SR_out(ID_SR_out),
         .UB_out(UB_out),
+        .SHF_out(SHF_out),
         
         .SRD_EX_out(SRD_EX_out),
         .PSW_LE_RE_EX_out(PSW_LE_RE_EX_out),
@@ -72,6 +75,7 @@ module CPU_PIPELINE_tb;
         .RF_LE_EX_out(RF_LE_EX_out),
         .ID_SR_EX_out(ID_SR_EX_out),
         .UB_EX_out(UB_EX_out),
+        .SHF_EX_out(SHF_EX_out),
         
         .RAM_CTRL_MEM_out(RAM_CTRL_MEM_out),
         .L_MEM_out(L_MEM_out),
@@ -95,11 +99,11 @@ module CPU_PIPELINE_tb;
         Rst = 0;
 
         // Change LE to 0 at time 48
-        #48;
+        #45;
         LE = 0;
 
         // Change S to 1 at time 60
-        #60;
+        #12;
         S = 1;
 
         #200;
@@ -110,10 +114,6 @@ module CPU_PIPELINE_tb;
     // Intermediate nets for monitoring
     wire [31:0] instr_out = instruction_out;
     wire [7:0] front_q_out_int = front_q_out;
-    wire [20:0] cu_signals = {SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out};
-    wire [20:0] ex_signals = {SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out, RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out};
-    wire [5:0] mem_signals = {RAM_CTRL_MEM_out, L_MEM_out, RF_LE_MEM_out};
-    wire rf_le_wb_signal = RF_LE_WB_out;
 
     reg [63:0] instr_keyword;
 
@@ -160,22 +160,22 @@ module CPU_PIPELINE_tb;
 
 
     initial begin
-      $monitor("Current Time Unit = %0t\n\
-                Ins. = %s %b\n\
-                Front_q = %d\n\
-                ID_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b\n\
-                EX_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b\n\
-                MEM_STAGE:  RAM_CTRL = %b  L = %b  RF_LE = %b\n\
-                WB_STAGE:   RF_LE = %b\n",
+        $monitor("Current Time Unit = %0t\n\
+                  Ins. = %s %b\n\
+                  Front_q = %d\n\
+                  ID_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b SHF = %b \n\
+                  EX_STAGE:   SRD = %b  PSW_RE_LE = %b  B = %b  SOH_OP = %b  ALU_OP = %b  RAM_CTRL = %b  L = %b  RF_LE = %b  ID_SR = %b  UB = %b SHF = %b \n\
+                  MEM_STAGE:  RAM_CTRL = %b  L = %b  RF_LE = %b\n\
+                  WB_STAGE:   RF_LE = %b\n",
                     $time,
                     instr_keyword, instr_out,
                     front_q_out_int,
 
                     // ID Stage
-                    SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out,
+                    SRD_out, PSW_LE_RE_out, B_out, SOH_OP_out, ALU_OP_out, RAM_CTRL_out, L_out, RF_LE_out, ID_SR_out, UB_out, SHF_out,
 
                     // EX Stage
-                    SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out,RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out,
+                    SRD_EX_out, PSW_LE_RE_EX_out, B_EX_out, SOH_OP_EX_out, ALU_OP_EX_out,RAM_CTRL_EX_out, L_EX_out, RF_LE_EX_out, ID_SR_EX_out, UB_EX_out,SHF_EX_out,
 
                     // MEM Stage
                     RAM_CTRL_MEM_out, L_MEM_out, RF_LE_MEM_out,

@@ -42,7 +42,7 @@ endmodule
 
 
 module ID_EX_REG (
-    input wire clk, reset, load_enable,
+    input wire clk, reset,
 
     // Control signals from mux
     input wire [1:0] SRD_in,
@@ -55,6 +55,7 @@ module ID_EX_REG (
     input wire RF_LE_in,
     input wire [1:0] ID_SR_in,
     input wire UB_in,
+    input wire SHF_in,
 
     // Outputs to EX stage
     output reg [1:0] SRD_out,
@@ -66,7 +67,8 @@ module ID_EX_REG (
     output reg L_out,
     output reg RF_LE_out,
     output reg [1:0] ID_SR_out,
-    output reg UB_out
+    output reg UB_out,
+    output reg SHF_out
 );
 
     always @(posedge clk) begin
@@ -81,7 +83,8 @@ module ID_EX_REG (
             RF_LE_out <= 0;
             ID_SR_out <= 0;
             UB_out <= 0;
-        end else if (load_enable) begin
+            SHF_out <= 0;
+        end else begin
             SRD_out <= SRD_in;
             PSW_LE_RE_out <= PSW_LE_RE_in;
             B_out <= B_in;
@@ -92,13 +95,14 @@ module ID_EX_REG (
             RF_LE_out <= RF_LE_in;
             ID_SR_out <= ID_SR_in;
             UB_out <= UB_in;
+            SHF_out <= SHF_in;
         end
     end
 endmodule
 
 
 module EX_MEM_REG (
-    input wire clk, reset, load_enable,
+    input wire clk, reset,
 
     input wire [3:0] RAM_CTRL_in,
     input wire L_in,
@@ -114,7 +118,7 @@ module EX_MEM_REG (
             RAM_CTRL_out <= 0;
             L_out <= 0;
             RF_LE_out <= 0;
-        end else if (load_enable) begin
+        end else begin
             RAM_CTRL_out <= RAM_CTRL_in;
             L_out <= L_in;
             RF_LE_out <= RF_LE_in;
@@ -124,7 +128,7 @@ endmodule
 
 
 module MEM_WB_REG (
-    input wire clk, reset, load_enable,
+    input wire clk, reset,
 
     input wire RF_LE_in,
 
@@ -134,7 +138,7 @@ module MEM_WB_REG (
     always @(posedge clk) begin
         if (reset) begin
             RF_LE_out <= 0;
-        end else if (load_enable) begin
+        end else begin
             RF_LE_out <= RF_LE_in;
         end
     end

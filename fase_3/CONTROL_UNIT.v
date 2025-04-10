@@ -9,7 +9,8 @@ module CONTROL_UNIT (
     output reg L,                // Select Dataout from RAM
     output reg RF_LE,            // Register File Load Enable
     output reg [1:0] ID_SR,      // 2-bit Instruction Decode Shift Register
-    output reg UB                // Unconditional Branch
+    output reg UB,               // Unconditional Branch
+    output reg SHF               // Shift
 );
     // Second Opcode select for ALU operations
     task  set_alu_op(input [5:0] op2);
@@ -27,6 +28,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
             6'b011100: begin    // ADDC
@@ -40,6 +42,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
             6'b101000: begin    // ADDL
@@ -53,6 +56,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
             6'b010000: begin    // SUB
@@ -66,6 +70,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
             6'b010100: begin    // SUBB
@@ -79,6 +84,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
             6'b001001: begin    // OR
@@ -92,7 +98,9 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
+
             6'b001010: begin    // XOR
             SRD = 2'b00;        // I[4:0]
             PSW_LE_RE = 2'b00;  // NO Load & write enabled
@@ -104,6 +112,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
 
                 6'b001000: begin    // AND
@@ -117,8 +126,8 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Load result into register
                 ID_SR = 2'b11;      // Both registers are in use
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
-
 
                 6'b010010: begin    // LDW
                 SRD = 2'b00;        // Select destination register 
@@ -131,7 +140,9 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b01;      // Use register 'b' 
                 UB = 0;             // No unconditional branch  
+                SHF = 0;            // No shift   
                 end
+
                 6'b010001: begin    // LDH
                 SRD = 2'b00;        // Select destination register 
                 PSW_LE_RE = 2'b00;  // NO Load & write enabled
@@ -143,6 +154,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b01;      // Use register 'b' 
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b010000: begin    // LDB
                 SRD = 2'b00;        // Select destination register 
@@ -155,6 +167,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b01;      // Use register 'b' 
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b001101: begin    // LDO
                 SRD = 2'b00;        // Select destination register 
@@ -167,6 +180,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b01;      // Use register 'b' 
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b001000: begin    // LDIL
                 SRD = 2'b00;        // Select destination register 
@@ -179,6 +193,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b00;      // No source register  
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b011010: begin    // STW
                 SRD = 2'b00;        // Select destination register 
@@ -191,6 +206,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // No write to register 
                 ID_SR = 2'b11;      // Use both registers 
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b011001: begin    // STH
                 SRD = 2'b00;        // Select destination register 
@@ -203,6 +219,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // No write to register 
                 ID_SR = 2'b11;      // Use both registers  
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
                 6'b011000: begin // STB
                 SRD = 2'b00;        // Select destination register 
@@ -215,6 +232,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // No write to register 
                 ID_SR = 2'b11;      // Use both registers  
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
             6'b001000: begin    // AND
             SRD = 2'b00;        // I[4:0]
@@ -227,6 +245,7 @@ module CONTROL_UNIT (
             RF_LE = 1;          // Load result into register
             ID_SR = 2'b11;      // Both registers are in use
             UB = 0;             // No unconditional branch
+            SHF = 0;            // No shift   
             end
         endcase
     end
@@ -245,6 +264,7 @@ module CONTROL_UNIT (
         RF_LE = 0;
         ID_SR = 2'b00;
         UB = 0;
+        SHF = 0;
 
         // If instruction is NOP (all bits zero), keep signals at 0
         if (instruction != 32'h00000000) begin
@@ -264,6 +284,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b10;      // Use register 'b' 
                 UB = 0;             // No unconditional branch  
+                SHF = 0;            // No shift   
                 end
 
                 6'b010001: begin    // LDH
@@ -277,6 +298,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b10;      // Use register 'b' 
                 UB = 0;             // No unconditional branch  
+                SHF = 0;            // No shift   
                 end
 
                 6'b010000: begin    // LDB
@@ -290,6 +312,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b10;      // Use register 'b' 
                 UB = 0;             // No unconditional branch 
+                SHF = 0;            // No shift   
                 end
 
                 6'b001101: begin    // LDO
@@ -303,6 +326,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b01;      // Using register 'a' 
                 UB = 0;             // No unconditional branch 
+                SHF = 0;            // No shift   
                 end
 
                 6'b001000: begin    // LDIL
@@ -316,6 +340,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Write to register 
                 ID_SR = 2'b00;      // N/A 
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
 
                 6'b011010: begin    // STW
@@ -329,6 +354,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // N/A 
                 ID_SR = 2'b11;      // Both registers 
                 UB = 0;             // No unconditional branch 
+                SHF = 0;            // No shift   
                 end
                 
                 6'b011001: begin    // STH
@@ -342,6 +368,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // N/A 
                 ID_SR = 2'b11;      // Both registers 
                 UB = 0;             // No unconditional branch 
+                SHF = 0;            // No shift   
                 end
                 
                 6'b011000: begin    // STB
@@ -355,6 +382,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // N/A 
                 ID_SR = 2'b11;      // Both registers 
                 UB = 0;             // No unconditional branch 
+                SHF = 0;            // No shift   
                 end
                 
                 6'b111010: begin    // BL
@@ -368,6 +396,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Load result into register
                 ID_SR = 2'b00;      // N/A
                 UB = 1;             // Unconditional branch
+                SHF = 0;            // No shift   
                 end
 
                 6'b100000: begin    // COMBT
@@ -381,6 +410,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // N/A
                 ID_SR = 2'b11;      // Both registers are in use
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
 
                 6'b100010: begin    // COMBF
@@ -394,6 +424,7 @@ module CONTROL_UNIT (
                 RF_LE = 0;          // N/A
                 ID_SR = 2'b11;      // Both registers are in use
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
 
                 6'b101101: begin    // ADDI
@@ -407,6 +438,7 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Load result into register
                 ID_SR = 2'b01;      // A register in use
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
                 end
 
                 6'b100101: begin    // SUBI
@@ -420,6 +452,21 @@ module CONTROL_UNIT (
                 RF_LE = 1;          // Load result into register
                 ID_SR = 2'b01;      // A register in use
                 UB = 0;             // No unconditional branch
+                SHF = 0;            // No shift   
+                end
+
+                6'b110100: begin    // EXTRS
+                SRD = 2'b10;        // I[20:16]
+                PSW_LE_RE = 2'b00;  // N/A
+                B = 0;              // No branch
+                SOH_OP = 3'b101;    // shift right
+                ALU_OP = 4'b1010;   // Pass B
+                RAM_CTRL = 4'b0000; // No RAM operation
+                L = 0;              // No load
+                RF_LE = 1;          // Load result into register
+                ID_SR = 2'b01;      // A register in use
+                UB = 0;             // No unconditional branch
+                SHF = 1;            // No shift   
                 end
 
                 default: ; // unknown opcode → no control
