@@ -24,14 +24,14 @@ module TAG (
     always @(*) begin
         if (cond_eval) begin
             pc_back_out = tag_result;
-            pc_front_out = tag_result;
 
             // Save return address if it's a BL instruction
             return_address = bl ? front_plus_8 : 0;
         end else begin
-            pc_back_out = front_pc;
-            pc_front_out = front_pc;
+            pc_back_out = front_pc + 4;
             return_address = 0;
         end
+        //Always load the front with the previous back 
+        pc_front_out = pc_back_out; 
     end
 endmodule
