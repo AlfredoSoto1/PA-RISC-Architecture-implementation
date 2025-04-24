@@ -201,6 +201,7 @@ module CPU_PIPELINE (
         .L_out(L_EX),
         .RF_LE_out(RF_LE_EX),
         .ID_SR_out(ID_SR_EX),
+        .UB_out(UB_EX),
         .SHF_out(SHF_EX)
     );
 

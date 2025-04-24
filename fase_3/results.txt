@@ -3,7 +3,7 @@ Current Time Unit = 0
                   Ins. =          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                   Front_q =   x
                   ID_STAGE:   SRD = xx  PSW_RE_LE = xx  B = x  SOH_OP = xxx  ALU_OP = xxxx  RAM_CTRL = xxxx  L = x  RF_LE = x  ID_SR = xx  UB = x SHF = x 
-                  EX_STAGE:   SRD = xx  PSW_RE_LE = xx  B = x  SOH_OP = xxx  ALU_OP = xxxx  RAM_CTRL = xxxx  L = x  RF_LE = x  ID_SR = xx  UB = z SHF = x 
+                  EX_STAGE:   SRD = xx  PSW_RE_LE = xx  B = x  SOH_OP = xxx  ALU_OP = xxxx  RAM_CTRL = xxxx  L = x  RF_LE = x  ID_SR = xx  UB = x SHF = x 
                   MEM_STAGE:  RAM_CTRL = xxxx  L = x  RF_LE = x
                   WB_STAGE:   RF_LE = x
 
@@ -11,7 +11,7 @@ Current Time Unit = 2
                   Ins. =      NOP 00000000000000000000000000000000
                   Front_q =   0
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
@@ -19,7 +19,7 @@ Current Time Unit = 6
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =   4
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
@@ -27,7 +27,7 @@ Current Time Unit = 10
                   Ins. =      SUB 00001000011000000000010000000011
                   Front_q =   8
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 01  B = 0  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 11  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
@@ -35,7 +35,7 @@ Current Time Unit = 14
                   Ins. =      LDB 01000000001001010000000000001100
                   Front_q =  12
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0001  L = 1  RF_LE = 1  ID_SR = 10  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 01  B = 0  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 11  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 01  B = 0  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 11  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 0
 
@@ -43,7 +43,7 @@ Current Time Unit = 18
                   Ins. =      STH 01100100001000100000000000000000
                   Front_q =  16
                   ID_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0111  L = 0  RF_LE = 0  ID_SR = 11  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0001  L = 1  RF_LE = 1  ID_SR = 10  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0001  L = 1  RF_LE = 1  ID_SR = 10  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -51,7 +51,7 @@ Current Time Unit = 22
                   Ins. =    COMBT 10000000011111000001110111111001
                   Front_q =  20
                   ID_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 11  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0111  L = 0  RF_LE = 0  ID_SR = 11  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 0  SOH_OP = 010  ALU_OP = 0000  RAM_CTRL = 0111  L = 0  RF_LE = 0  ID_SR = 11  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0001  L = 1  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -59,7 +59,7 @@ Current Time Unit = 26
                   Ins. =     LDIL 00100001111000000011111100001010
                   Front_q =  24
                   ID_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 0  SOH_OP = 011  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 11  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 11  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0010  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 11  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0111  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 1
 
@@ -67,7 +67,7 @@ Current Time Unit = 30
                   Ins. =       BL 11101010100000000000000000010000
                   Front_q =  28
                   ID_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = 1 SHF = 0 
-                  EX_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 0  SOH_OP = 011  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 0  SOH_OP = 011  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
@@ -75,7 +75,7 @@ Current Time Unit = 34
                   Ins. =    EXTRS 11010011111011000001110111100101
                   Front_q =  32
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 101  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 1 
-                  EX_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 01  PSW_RE_LE = 00  B = 1  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 00  UB = 1 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 0
 
@@ -83,7 +83,7 @@ Current Time Unit = 38
                   Ins. =      NOP 00000000000000000000000000000000
                   Front_q =  36
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 101  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 1 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 00  B = 0  SOH_OP = 101  ALU_OP = 1010  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 1 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -91,7 +91,7 @@ Current Time Unit = 42
                   Ins. =      NOP 00000000000000000000000000000000
                   Front_q =  40
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -99,7 +99,7 @@ Current Time Unit = 46
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 1
 
@@ -107,7 +107,7 @@ Current Time Unit = 50
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
@@ -115,7 +115,7 @@ Current Time Unit = 54
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 0
 
@@ -123,7 +123,7 @@ Current Time Unit = 58
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -131,7 +131,7 @@ Current Time Unit = 60
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 10  PSW_RE_LE = 01  B = 0  SOH_OP = 001  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 1  ID_SR = 01  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -139,7 +139,7 @@ Current Time Unit = 62
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 1
                   WB_STAGE:   RF_LE = 1
 
@@ -147,7 +147,7 @@ Current Time Unit = 66
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 1
 
@@ -155,7 +155,7 @@ Current Time Unit = 70
                   Ins. =     ADDI 10110100101001000000000000000000
                   Front_q =  44
                   ID_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
-                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = z SHF = 0 
+                  EX_STAGE:   SRD = 00  PSW_RE_LE = 00  B = 0  SOH_OP = 000  ALU_OP = 0000  RAM_CTRL = 0000  L = 0  RF_LE = 0  ID_SR = 00  UB = 0 SHF = 0 
                   MEM_STAGE:  RAM_CTRL = 0000  L = 0  RF_LE = 0
                   WB_STAGE:   RF_LE = 0
 
