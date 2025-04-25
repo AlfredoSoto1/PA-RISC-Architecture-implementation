@@ -27,11 +27,11 @@ module TAG (
             3'b000: begin
                 // TA = B_PC + 8 + 4 x sign_ext(w1,w2,w);
                 // Shift left by 2 bits to multiply by 4
-                TA = R + ({offset[20:16], offset[12:2], offset[0]} << 2); 
+                TA = R + (sign_ext({offset[20:16], offset[12:2], offset[0]}) << 2); 
             end
             default:
                 // TA = B_PC + 8 + 4 x sign_ext(w1,w);
-                TA = R + ({offset[12:2], offset[0]} << 2);
+                TA = R + (sign_ext({offset[12:2], offset[0]}) << 2);
         endcase
     end
 endmodule

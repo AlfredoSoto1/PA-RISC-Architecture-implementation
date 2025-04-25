@@ -222,6 +222,8 @@ endmodule
 
 
 module EX (
+  input wire CLK,
+
   input wire [7:0] return_address,
   input wire [7:0] target_address,
   input wire [31:0] FPA,
@@ -231,106 +233,98 @@ module EX (
   input wire [4:0]  IDR,
 
   // Control unit signals
-  input wire [1:0] PSW_LE_RE;       
-  input wire B;                     
-  input wire [2:0] SOH_OP;         
-  input wire [3:0] ALU_OP;         
-  input wire [3:0] RAM_CTRL;        
-  input wire L;                    
-  input wire RF_LE;                
-  input wire [1:0] ID_SR;           
-  input wire UB;                   
+  input wire [1:0] PSW_LE_RE,      
+  input wire B,                     
+  input wire [2:0] SOH_OP,         
+  input wire [3:0] ALU_OP,         
+  input wire [3:0] RAM_CTRL,        
+  input wire L,                    
+  input wire RF_LE,                
+  input wire [1:0] ID_SR,           
+  input wire UB,
+
+  output reg EX_J,                   
+  output reg [7:0] TARGET_ADDRESS,
+  output reg [31:0] EX_OUT,                   
+  output reg [31:0] EX_DI,                   
+  output reg [4:0]  EX_RD,                   
+  output reg EX_L,                   
+  output reg EX_RF_LE, 
+  output reg RAM_CTRL 
 );
-    wire [1:0] SRD_EX;
-    wire [1:0] PSW_LE_RE_EX;
-    wire B_EX;
-    wire [2:0] SOH_OP_EX;
-    wire [3:0] ALU_OP_EX;
-    wire [3:0] RAM_CTRL_EX;
-    wire L_EX;
-    wire RF_LE_EX;
-    wire [1:0] ID_SR_EX;
-    wire UB_EX;
-    wire SHF_EX;
+
+    assign EX_L = L;
+    assign EX_RF_LE = RF_LE;
+    assign EX_DI = FPB;
+    assign EX_RD = IDR;
+    assign TARGET_ADDRESS = target_address;
+
+    wire [31:0] N;
+    wire [31:0] ALU_OUT;
+    wire Ci;
+
+    wire Z;
+    wire N; 
+    wire C;
+    wire V;
+
+    wire J;
+
+    OperandHandler op (
+        .RB(FPB),
+        .I(IM),   
+        .S(SOH_OP),   
+        .N(N) 
+    );
+
+    ALU alu (
+        .A(FPA),         
+        .B(N),         
+        .Ci(Ci),         
+        .OP(ALU_OP),         
+        .Out(ALU_OUT),
+        .Z(Z),
+        .N(N), 
+        .C(C),
+        .V(V)     
+    );
+
+    CH condition_handler (
+        .B(B),   
+        .Odd(ALU_OUT[0]), 
+        .Z(Z), 
+        .N(N), 
+        .C(C), 
+        .V(V),   
+        .Cond(COND),
+        .J(J)      
+    );
+
+    PSW_REG psw (
+        .clk(CLK),   
+        .LE(PSW_LE_RE[0]),    
+        .RE(PSW_LE_RE[1]),    
+        .C_in(C),  
+        .C_out(Ci)
+    );
+
+    MUX_EX_J mux_ex_j (
+        .S(UB), 
+        .J(J),  
+        .O(EX_J)  
+    );
+
+    MUX_EX_RETURN_ADDRESS mux_ret(
+        .S(UB),      
+        .R(return_address),   
+        .ALU(ALU_OUT), 
+        .O(EX_OUT)
+    );
 
 endmodule
-    //
-    // Instruction Memory Stage
-    //
 
-    wire [3:0] RAM_CTRL_MEM;
-    wire L_MEM;
-    wire RF_LE_MEM;
+module MEM (
 
-    EX_MEM_REG ex_mem_reg (
-        .clk(Clk),
-        .reset(Rst),
-
-        // Control signals from ID_EX_REG
-        .RAM_CTRL_in(RAM_CTRL_EX),
-        .L_in(L_EX),
-        .RF_LE_in(RF_LE_EX),
-
-        // Outputs to MEM stage
-        .RAM_CTRL_out(RAM_CTRL_MEM),
-        .L_out(L_MEM),
-        .RF_LE_out(RF_LE_MEM)
-    );
-
-    //
-    // Instruction WriteBack Stage
-    //
-
-    wire RF_LE_WB;
-
-    MEM_WB_REG mem_wb_reg (
-        .clk(Clk),
-        .reset(Rst),
-
-        // Control signals from EX_MEM_REG
-        .RF_LE_in(RF_LE_MEM),
-
-        // Outputs to WB stage
-        .RF_LE_out(RF_LE_WB)
-    );
-
-// IF stage
-assign instruction_out = instruction;
-assign front_q_out = front_q;
-
-// Control Unit output (after CU_MUX)
-assign SRD_out = SRD_MUX;
-assign PSW_LE_RE_out = PSW_LE_RE_MUX;
-assign B_out = B_MUX;
-assign SOH_OP_out = SOH_OP_MUX;
-assign ALU_OP_out = ALU_OP_MUX;
-assign RAM_CTRL_out = RAM_CTRL_MUX;
-assign L_out = L_MUX;
-assign RF_LE_out = RF_LE_MUX;
-assign ID_SR_out = ID_SR_MUX;
-assign UB_out = UB_MUX;
-assign SHF_out = SHF_MUX;
-
-// EX stage
-assign SRD_EX_out = SRD_EX;
-assign PSW_LE_RE_EX_out = PSW_LE_RE_EX;
-assign B_EX_out = B_EX;
-assign SOH_OP_EX_out = SOH_OP_EX;
-assign ALU_OP_EX_out = ALU_OP_EX;
-assign RAM_CTRL_EX_out = RAM_CTRL_EX;
-assign L_EX_out = L_EX;
-assign RF_LE_EX_out = RF_LE_EX;
-assign ID_SR_EX_out = ID_SR_EX;
-assign UB_EX_out = UB_EX;
-assign SHF_EX_out = SHF_EX;
-
-// MEM stage
-assign RAM_CTRL_MEM_out = RAM_CTRL_MEM;
-assign L_MEM_out = L_MEM;
-assign RF_LE_MEM_out = RF_LE_MEM;
-
-// WB stage
-assign RF_LE_WB_out = RF_LE_WB;
-
+);
 
 endmodule
