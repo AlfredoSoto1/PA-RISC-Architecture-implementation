@@ -336,18 +336,36 @@ module CONTROL_UNIT (
                 SHF = 0;            // No shift   
                 end
 
-                6'b110100: begin    // EXTRS
-                SRD = 2'b10;        // I[20:16]
-                PSW_LE_RE = 2'b00;  // N/A
-                B = 0;              // No branch
-                SOH_OP = 3'b101;    // shift right
-                ALU_OP = 4'b1010;   // Pass B
-                RAM_CTRL = 4'b0000; // No RAM operation
-                L = 0;              // No load
-                RF_LE = 1;          // Load result into register
-                ID_SR = 2'b01;      // A register in use
-                UB = 0;             // No unconditional branch
-                SHF = 1;            // No shift   
+                6'b110100: begin
+                    case (instruction[12:10])
+                        3'b110: begin       // EXTRS
+                        SRD = 2'b10;        // I[20:16]
+                        PSW_LE_RE = 2'b00;  // N/A
+                        B = 0;              // No branch
+                        SOH_OP = 3'b101;    // shift right
+                        ALU_OP = 4'b1010;   // Pass B
+                        RAM_CTRL = 4'b0000; // No RAM operation
+                        L = 0;              // No load
+                        RF_LE = 1;          // Load result into register
+                        ID_SR = 2'b10;      // B register in use
+                        UB = 0;             // No unconditional branch
+                        SHF = 1;            // Shift   
+                        end
+
+                        3'b111: begin       // EXTRU
+                        SRD = 2'b10;        // I[20:16]
+                        PSW_LE_RE = 2'b00;  // N/A
+                        B = 0;              // No branch
+                        SOH_OP = 3'b100;    // shift right unsigned
+                        ALU_OP = 4'b1010;   // Pass B
+                        RAM_CTRL = 4'b0000; // No RAM operation
+                        L = 0;              // No load
+                        RF_LE = 1;          // Load result into register
+                        ID_SR = 2'b10;      // B register in use
+                        UB = 0;             // No unconditional branch
+                        SHF = 1;            // Shift   
+                        end
+                    endcase
                 end
 
                 default: ; // unknown opcode → no control
