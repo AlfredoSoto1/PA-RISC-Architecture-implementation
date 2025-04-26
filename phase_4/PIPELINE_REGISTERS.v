@@ -29,7 +29,7 @@ endmodule
 
 module IF_ID_REGISTER (
     input wire LE, Rst, Clk  // Load enable, synchronous reset, clock
-    
+    input wire CLR,          // Clear signal
     input wire [7:0]  front_address,       // 8-bit input
     input wire [31:0] fetched_instruction, // 32-bit input
     
@@ -38,7 +38,7 @@ module IF_ID_REGISTER (
     
 );
     always @(posedge Clk) begin
-        if (Rst)
+        if (Rst || CLR)
             B_PC <= 8'h0;                     
             instruction <= 32'h0;               
         else if (LE)
@@ -63,7 +63,6 @@ module ID_EX_REG (
     input wire [20:0] IM_in,
 
     // Control signals from mux
-    input wire [1:0] SRD_in,
     input wire [1:0] PSW_LE_RE_in,
     input wire B_in,
     input wire [2:0] SOH_OP_in,
@@ -71,9 +70,7 @@ module ID_EX_REG (
     input wire [3:0] RAM_CTRL_in,
     input wire L_in,
     input wire RF_LE_in,
-    input wire [1:0] ID_SR_in,
     input wire UB_in,
-    input wire SHF_in,
 
     // Output Register values and addresses
     output reg [31:0] RA_out;
@@ -87,7 +84,6 @@ module ID_EX_REG (
     output reg [20:0] IM_out,
 
     // Outputs to EX stage
-    output reg [1:0] SRD_out,
     output reg [1:0] PSW_LE_RE_out,
     output reg B_out,
     output reg [2:0] SOH_OP_out,
@@ -95,9 +91,7 @@ module ID_EX_REG (
     output reg [3:0] RAM_CTRL_out,
     output reg L_out,
     output reg RF_LE_out,
-    output reg [1:0] ID_SR_out,
     output reg UB_out,
-    output reg SHF_out
 );
 
     always @(posedge clk) begin
@@ -108,7 +102,6 @@ module ID_EX_REG (
             TA_out <= 0;
             R_out <= 0;
 
-            SRD_out <= 0;
             PSW_LE_RE_out <= 0;
             B_out <= 0;
             SOH_OP_out <= 0;
@@ -116,9 +109,7 @@ module ID_EX_REG (
             RAM_CTRL_out <= 0;
             L_out <= 0;
             RF_LE_out <= 0;
-            ID_SR_out <= 0;
             UB_out <= 0;
-            SHF_out <= 0;
         end else begin
 
             RA_out <= RA_in;
@@ -126,7 +117,6 @@ module ID_EX_REG (
             TA_out <= TA_in;
             R_out <= R_in;
 
-            SRD_out <= SRD_in;
             PSW_LE_RE_out <= PSW_LE_RE_in;
             B_out <= B_in;
             SOH_OP_out <= SOH_OP_in;
@@ -134,9 +124,7 @@ module ID_EX_REG (
             RAM_CTRL_out <= RAM_CTRL_in;
             L_out <= L_in;
             RF_LE_out <= RF_LE_in;
-            ID_SR_out <= ID_SR_in;
             UB_out <= UB_in;
-            SHF_out <= SHF_in;
         end
     end
 endmodule
@@ -166,24 +154,37 @@ endmodule
 module EX_MEM_REG (
     input wire clk, reset,
 
-    input wire [3:0] RAM_CTRL_in,
-    input wire L_in,
-    input wire RF_LE_in,
+    input wire [31:0] EX_OUT,
+    input wire [31:0] EX_DI,
+    input wire [4:0]  EX_RD,
 
-    output reg [3:0] RAM_CTRL_out,
-    output reg L_out,
-    output reg RF_LE_out
+    input wire L,
+    input wire RF_LE,
+    input wire [3:0] RAM_CTRL,
+
+    output reg [31:0] EX_OUT_IN,
+    output reg [31:0] EX_DI_IN,
+    output reg [4:0]  EX_RD_IN,
+    output reg L_IN,
+    output reg RF_LE_IN,
+    output reg [3:0] RAM_CTRL_IN
 );
 
     always @(posedge clk) begin
         if (reset) begin
-            RAM_CTRL_out <= 0;
-            L_out <= 0;
-            RF_LE_out <= 0;
+            EX_OUT_IN <= 0;
+            EX_DI_IN <= 0;
+            EX_RD_IN <= 0;
+            L_IN <= 0;
+            RF_LE_IN <= 0;
+            RAM_CTRL_IN <= 0;
         end else begin
-            RAM_CTRL_out <= RAM_CTRL_in;
-            L_out <= L_in;
-            RF_LE_out <= RF_LE_in;
+            EX_OUT_IN <= EX_OUT;
+            EX_DI_IN <= EX_DI;
+            EX_RD_IN <= EX_RD;
+            L_IN <= L;
+            RF_LE_IN <= RF_LE;
+            RAM_CTRL_IN <= RAM_CTRL;
         end
     end
 endmodule
@@ -192,16 +193,24 @@ endmodule
 module MEM_WB_REG (
     input wire clk, reset,
 
-    input wire RF_LE_in,
+    input wire [4:0]  MEM_RD,
+    input wire [31:0] MEM_OUT,
+    input wire MEM_RF_LE,
 
-    output reg RF_LE_out
+    output reg [4:0]  WB_RD,
+    output reg [31:0] WB_OUT,
+    output reg WB_RF_LE
 );
 
     always @(posedge clk) begin
         if (reset) begin
-            RF_LE_out <= 0;
+            WB_RD <= 0;
+            WB_OUT <= 0;
+            WB_RF_LE <= 0;
         end else begin
-            RF_LE_out <= RF_LE_in;
+            WB_RD <= MEM_RD;
+            WB_OUT <= MEM_OUT;
+            WB_RF_LE <= MEM_RF_LE;
         end
     end
 endmodule

@@ -1,404 +1,308 @@
-`include "ROM.v"
-`include "PC_ADDER.v"
-`include "PIPELINE_REGISTERS.v"
-
-`include "CU.v"
-`include "TAG.v"
-`include "MUXES.v"
-`include "TP_REGISTER_FILE.v"
+`include "STAGES.v"
+`include "DHDU.v"
 
 module CPU_PIPELINE (
-    input wire Clk, Rst, LE, S,
-
-    output wire [31:0] instruction_out,
-    output wire [7:0] front_q_out,
-
-    output wire [1:0] SRD_out,
-    output wire [1:0] PSW_LE_RE_out,
-    output wire B_out,
-    output wire [2:0] SOH_OP_out,
-    output wire [3:0] ALU_OP_out,
-    output wire [3:0] RAM_CTRL_out,
-    output wire L_out,
-    output wire RF_LE_out,
-    output wire [1:0] ID_SR_out,
-    output wire UB_out,
-    output wire SHF_out,
-
-    output wire [1:0] SRD_EX_out,
-    output wire [1:0] PSW_LE_RE_EX_out,
-    output wire B_EX_out,
-    output wire [2:0] SOH_OP_EX_out,
-    output wire [3:0] ALU_OP_EX_out,
-    output wire [3:0] RAM_CTRL_EX_out,
-    output wire L_EX_out,
-    output wire RF_LE_EX_out,
-    output wire [1:0] ID_SR_EX_out,
-    output wire UB_EX_out,
-    output wire SHF_EX_out,
-
-    output wire [3:0] RAM_CTRL_MEM_out,
-    output wire L_MEM_out,
-    output wire RF_LE_MEM_out,
-
-    output wire RF_LE_WB_out
+    input wire CLK, RST
 );
-    // 
-    // 
-    // Instruction Fetch Stage
-    // 
-    // 
 
+    // DHDU signals
+    wire LE;
+    wire NOP;
+    wire [1:0] A_S;
+    wire [1:0] B_S;
+    wire [1:0] ID_SR;
+    wire [4:0] RA;
+    wire [4:0] RB;
+    wire WB_RF_LE; 
+    wire [4:0]  WB_RD;
+
+    // Forwarding signals
+    wire [31:0] EX_OUT;
+    wire [31:0] MEM_OUT;
+    wire [31:0] WB_OUT;
+
+    //
+    // FETCH STAGE
+    //
+    wire J;
+    wire [7:0] TA;
+    wire [7:0] B_PC;
+    wire [7:0] front_q;
     wire [31:0] instruction;
     wire [31:0] fetched_instruction;
 
-    wire [7:0] B_PC;
-    wire [7:0] back_q;
-    wire [7:0] front_q;
-    wire [7:0] next_pc;
-    wire [7:0] ifmux_out;
-    
-    PC_BACK_REGISTER back_reg (
-        .Q(back_q),
-        .D(next_pc),
-        .LE(LE),
-        .Rst(Rst),
-        .Clk(Clk)
-    );
-
-    MUX_IF pc_mux (
-        .S(S),
+    IF if_stage (
+        .CLK(CLK), .RST(RST), .LE(LE),
+        .S(J),
         .TA(TA),
-        .back(back_q),
-        .O(ifmux_out)
+        .address(front_q),
+        .instruction(fetched_instruction)
     );
-
-    PC_FRONT_REGISTER front_reg (
-        .Q(front_q),
-        .D(ifmux_out),
-        .LE(LE),
-        .Rst(Rst),
-        .Clk(Clk)
-    );
-
-    PC_ADDER pc_adder (
-        .currPC(ifmux_out),
-        .nextPC(next_pc)
-    );
-
-    ROM instr_mem (
-        .I(fetched_instruction),
-        .A(front_q)
-    );
-
-    // 
-    // 
-    // IF/ID Register
-    // 
-    // 
 
     IF_ID_REGISTER if_id_reg (
         .LE(LE),
-        .Rst(Rst),
-        .Clk(Clk),
+        .Rst(RST),
+        .CLR(J),
+        .Clk(CLK),
 
         .front_address(front_q),
         .fetched_instruction(fetched_instruction),
 
         .B_PC(B_PC),
+        .instruction(instruction)
+    );
+
+    // 
+    // DECODE STAGE
+    // 
+
+    wire [31:0] ID_TA;
+    wire [7:0]  ID_RET_ADDRESS;
+    wire [31:0] ID_FPA;
+    wire [31:0] ID_FPB;
+    wire [2:0]  ID_COND;
+    wire [20:0] ID_IM;
+    wire [4:0]  ID_IDR;
+    wire [1:0]  ID_PSW_LE_RE;      // 2-bit PSW Load / Read Enable
+    wire ID_B;                     // Branch
+    wire [2:0] ID_SOH_OP;          // 3-bit Operand handler opcode
+    wire [3:0] ID_ALU_OP;          // 4-bit ALU opcode
+    wire [3:0] ID_RAM_CTRL;        // 4-bit Ram control
+    wire ID_L;                     // Select Dataout from RAM
+    wire ID_RF_LE;                 // Register File Load Enable
+    wire ID_UB; 
+
+    ID id_stage (
+        .CLK(CLK),
+        .S(NOP),
+        .R_LE(WB_RF_LE),
+        .address(B_PC),
         .instruction(instruction),
+        .RD(WB_RD),
+        .PD_EX(EX_OUT),
+        .PD_MEM(MEM_OUT),
+        .PD_WB(WB_OUT),
+        
+        .A_S(A_S),
+        .B_S(B_S),
+
+        .return_address(ID_RET_ADDRESS),
+        .target_address(ID_TA),
+        .FPA(ID_FPA),
+        .FPB(ID_FPB),
+        .COND(ID_COND),
+        .IM(ID_IM),
+        .IDR(ID_IDR),
+
+        .RA(RA),
+        .RB(RB),
+
+        // Control unit signals
+        .PSW_LE_RE(ID_PSW_LE_RE), 
+        .B(ID_B),         
+        .SOH_OP(ID_SOH_OP),    
+        .ALU_OP(ID_ALU_OP),    
+        .RAM_CTRL(ID_RAM_CTRL),  
+        .L(ID_L),         
+        .RF_LE(ID_RF_LE),     
+        .ID_SR(ID_SR),     
+        .UB(ID_UB)        
     );
 
     //
-    //
-    // Instruction Decode Stage
-    //
+    // Execution Stage
     //
 
-    wire [1:0] SRD;             // 2-bit Select target register
-    wire [1:0] PSW_LE_RE;       // 2-bit PSW Load / Read Enable
-    wire B;                     // Branch
-    wire [2:0] SOH_OP;          // 3-bit Operand handler opcode
-    wire [3:0] ALU_OP;          // 4-bit ALU opcode
-    wire [3:0] RAM_CTRL;        // 4-bit Ram control
-    wire L;                     // Select Dataout from RAM
-    wire RF_LE;                 // Register File Load Enable
-    wire [1:0] ID_SR;           // 2-bit Instruction Decode Shift Register
-    wire UB;                    // Unconditional Branch
-    wire SHF;                   // Shift
+    wire [7:0] EX_RET_ADDRESS;
+    wire [7:0] EX_TA_ADDRESS;
+    wire [31:0] EX_FPA;
+    wire [31:0] EX_FPB;
+    wire [2:0]  EX_COND;
+    wire [20:0] EX_IM;
+    wire [4:0]  EX_IDR;
 
-    wire [1:0] SRD_MUX;
-    wire [1:0] PSW_LE_RE_MUX;
-    wire B_MUX;
-    wire [2:0] SOH_OP_MUX;
-    wire [3:0] ALU_OP_MUX;
-    wire [3:0] RAM_CTRL_MUX;
-    wire L_MUX;
-    wire RF_LE_MUX;
-    wire [1:0] ID_SR_MUX;
-    wire UB_MUX;
-    wire SHF_MUX;
+    wire [1:0] EX_PSW_LE_RE;      
+    wire EX_B;                     
+    wire [2:0] EX_SOH_OP;         
+    wire [3:0] EX_ALU_OP;         
+    wire [3:0] EX_RAM_CTRL;        
+    wire EX_L;                    
+    wire EX_RF_LE;               
+    wire EX_UB;
 
-    wire [4:0] IRD_MUX;
-    wire [4:0] RB_SHF_MUX;
-    wire [7:0] TA;
-    wire [7:0] R;
-
-    wire [31:0] PA;
-    wire [31:0] PB;
-    wire [31:0] FW_PA;
-    wire [31:0] FW_PB;
-
-    CONTROL_UNIT control_unit (
-        .instruction(instruction),
-        .SRD(SRD),         
-        .PSW_LE_RE(PSW_LE_RE),  
-        .B(B),           
-        .SOH_OP(SOH_OP), 
-        .ALU_OP(ALU_OP),      
-        .RAM_CTRL(RAM_CTRL),  
-        .L(L),           
-        .RF_LE(RF_LE),   
-        .ID_SR(ID_SR),   
-        .UB(UB),
-        .SHF(SHF)
-    );
-
-    MUX_ID_IRD mux_id_idr (
-        .S(SRD),
-        .I_0(instruction[4:0]),
-        .I_1(instruction[25:21]),
-        .I_2(instruction[20:16]),
-
-        .IDR(IRD_MUX)
-    );
-
-    CU_MUX cu_mux (
-        .S(S),
-
-        .SRD_in(SRD),
-        .PSW_LE_RE_in(PSW_LE_RE),
-        .B_in(B),
-        .SOH_OP_in(SOH_OP),
-        .ALU_OP_in(ALU_OP),
-        .RAM_CTRL_in(RAM_CTRL),
-        .L_in(L),
-        .RF_LE_in(RF_LE),
-        .ID_SR_in(ID_SR),
-        .UB_in(UB), 
-        .SHF_in(SHF), 
-
-        .SRD_out(SRD_MUX),
-        .PSW_LE_RE_out(PSW_LE_RE_MUX),
-        .B_out(B_MUX),
-        .SOH_OP_out(SOH_OP_MUX),
-        .ALU_OP_out(ALU_OP_MUX),
-        .RAM_CTRL_out(RAM_CTRL_MUX),
-        .L_out(L_MUX),
-        .RF_LE_out(RF_LE_MUX),
-        .ID_SR_out(ID_SR_MUX),
-        .UB_out(UB_MUX),
-        .SHF_out(SHF_MUX)
-    );
-
-    MUX_ID_SHF mux_id_shf (
-        .S(SHF_MUX),
-
-        .RA(instruction[25:21]),
-        .RB(instruction[20:16]),
-        .O(RB_SHF_MUX)
-    );
-
-    TAG tag (
-        .B_PC(B_PC),           
-        .offset(instruction[20:0]), 
-
-        .TA(TA),                
-        .R(R)              
-    );
-
-    TP_REGISTER_FILE reg_file (
-        .PA(RA), 
-        .PB(RB), 
-
-        .PW(), 
-
-        .RA(instruction[25:21]),
-        .RB(RB_SHF_MUX),
-        .RW(),
-
-        .Clk(Clk),
-        .LE()
-    );
-
-    MUX_ID_FW_P fwpa (
-        .S(),
-
-        .RP(PA),  
-        .EX(),  
-        .MEM(), 
-        .WB(),  
-
-        .FW_P(FW_PA)
-    );
-
-    MUX_ID_FW_P fwpb (
-        .S(),
-
-        .RP(PB),  
-        .EX(),  
-        .MEM(), 
-        .WB(),  
-
-        .FW_P(FW_PB)
-    );
-
-    //
-    // Instruction Execution Stage
-    //
-
-    wire [1:0] SRD_EX;
-    wire [1:0] PSW_LE_RE_EX;
-    wire B_EX;
-    wire [2:0] SOH_OP_EX;
-    wire [3:0] ALU_OP_EX;
-    wire [3:0] RAM_CTRL_EX;
-    wire L_EX;
-    wire RF_LE_EX;
-    wire [1:0] ID_SR_EX;
-    wire UB_EX;
-    wire SHF_EX;
+    // EX outputs
+    wire [31:0] EX_DI;                   
+    wire [4:0]  EX_RD;                   
+    wire EX_MEM_L;                   
+    wire EX_MEM_RF_LE; 
+    wire RAM_CTRL; 
 
     ID_EX_REG id_ex_reg (
-        .clk(Clk),
-        .reset(Rst),
+        .clk(CLK),
+        .reset(RST),
 
         // Register values and addresses
-        .RA_in(FW_PA),
-        .RB_in(FW_PB),
-        .TA_in(TA),
-        .R_in(R),
+        .RA_in(ID_FPA),
+        .RB_in(ID_FPB),
+        .TA_in(ID_TA),
+        .R_in(ID_RET_ADDRESS),
 
         // Condition and Immediate values
-        .RD_in(IRD_MUX),
-        .COND_in(instruction[15:13]),
-        .IM_in(instruction[20:0]),
+        .RD_in(ID_IDR),
+        .COND_in(ID_COND),
+        .IM_in(ID_IM),
 
         // Control signals from mux
-        .SRD_in(SRD_MUX),
-        .PSW_LE_RE_in(PSW_LE_RE_MUX),
-        .B_in(B_MUX),
-        .SOH_OP_in(SOH_OP_MUX),
-        .ALU_OP_in(ALU_OP_MUX),
-        .RAM_CTRL_in(RAM_CTRL_MUX),
-        .L_in(L_MUX),
-        .RF_LE_in(RF_LE_MUX),
-        .ID_SR_in(ID_SR_MUX),
-        .UB_in(UB_MUX),
-        .SHF_in(SHF_MUX),
+        .PSW_LE_RE_in(ID_PSW_LE_RE),
+        .B_in(ID_B),
+        .SOH_OP_in(ID_SOH_OP),
+        .ALU_OP_in(ID_ALU_OP),
+        .RAM_CTRL_in(ID_RAM_CTRL),
+        .L_in(ID_L),
+        .RF_LE_in(ID_RF_LE),
+        .UB_in(ID_UB),
 
-        // Register values and addresses
-        .RA_out(),
-        .RB_out(),
-        .TA_out(),
-        .R_out(),
+        // Outputs Register values and addresses
+        .RA_out(EX_FPA),
+        .RB_out(EX_FPB),
+        .TA_out(EX_TA_ADDRESS),
+        .R_out(EX_RET_ADDRESS),
 
-        // Condition and Immediate values
-        .RD_out(),
-        .COND_out(),
-        .IM_out(),
+        // Outputs Condition and Immediate values
+        .RD_out(EX_IDR),
+        .COND_out(EX_COND),
+        .IM_out(EX_IM),
 
         // Outputs to EX stage
-        .SRD_out(SRD_EX),
-        .PSW_LE_RE_out(PSW_LE_RE_EX),
-        .B_out(B_EX),
-        .SOH_OP_out(SOH_OP_EX),
-        .ALU_OP_out(ALU_OP_EX),
-        .RAM_CTRL_out(RAM_CTRL_EX),
-        .L_out(L_EX),
-        .RF_LE_out(RF_LE_EX),
-        .ID_SR_out(ID_SR_EX),
-        .UB_out(UB_EX),
-        .SHF_out(SHF_EX)
+        .PSW_LE_RE_out(EX_PSW_LE_RE),
+        .B_out(EX_B),
+        .SOH_OP_out(EX_SOH_OP),
+        .ALU_OP_out(EX_ALU_OP),
+        .RAM_CTRL_out(EX_RAM_CTRL),
+        .L_out(EX_L),
+        .RF_LE_out(EX_RF_LE),
+        .UB_out(EX_UB),
     );
 
-    //
-    // Instruction Memory Stage
-    //
+    EX ex_stage (
+        .CLK(CLK),
 
-    wire [3:0] RAM_CTRL_MEM;
-    wire L_MEM;
-    wire RF_LE_MEM;
+        .return_address(EX_RET_ADDRESS),
+        .target_address(EX_TA_ADDRESS),
+        .FPA(EX_FPA),
+        .FPB(EX_FPB),
+        .COND(EX_COND),
+        .IM(EX_IM),
+        .IDR(EX_IDR),
+
+        // Control unit signals
+        .PSW_LE_RE(EX_PSW_LE_RE),      
+        .B(EX_B),                     
+        .SOH_OP(EX_SOH_OP),         
+        .ALU_OP(EX_ALU_OP),         
+        .RAM_CTRL(EX_RAM_CTRL),        
+        .L(EX_L),                    
+        .RF_LE(EX_RF_LE),                
+        .UB(EX_UB),
+
+        // Outputs
+        .EX_J(J),                   
+        .TARGET_ADDRESS(TA),
+        .EX_OUT(EX_OUT),                   
+        .EX_DI(EX_DI),                   
+        .EX_RD(EX_RD),                   
+        .EX_L(EX_MEM_L),                   
+        .EX_RF_LE(EX_MEM_RF_LE), 
+        .RAM_CTRL(RAM_CTRL) 
+    );
+
+    // 
+    // Memory Stage
+    // 
+
+    wire [31:0] EX_OUT_IN;
+    wire [31:0] EX_DI_IN;
+    wire [4:0]  EX_RD_IN;
+
+    wire L_IN;
+    wire RF_LE_IN;
+    wire [3:0] RAM_CTRL_IN;
+
+    wire [4:0]  MEM_RD;
+    wire MEM_RF_LE; 
 
     EX_MEM_REG ex_mem_reg (
-        .clk(Clk),
-        .reset(Rst),
+        .clk(CLK),
+        .reset(RST),
 
-        // Control signals from ID_EX_REG
-        .RAM_CTRL_in(RAM_CTRL_EX),
-        .L_in(L_EX),
-        .RF_LE_in(RF_LE_EX),
+        .EX_OUT(EX_OUT),                   
+        .EX_DI(EX_DI),                   
+        .EX_RD(EX_RD), 
+        .L(EX_MEM_L),
+        .RF_LE(EX_MEM_RF_LE),
+        .RAM_CTRL(RAM_CTRL),
 
-        // Outputs to MEM stage
-        .RAM_CTRL_out(RAM_CTRL_MEM),
-        .L_out(L_MEM),
-        .RF_LE_out(RF_LE_MEM)
+        // Outputs
+        .EX_OUT_IN(EX_OUT_IN),                   
+        .EX_DI_IN(EX_DI_IN),                   
+        .EX_RD_IN(EX_RD_IN), 
+        .L_IN(L_IN),
+        .RF_LE_IN(RF_LE_IN),
+        .RAM_CTRL_IN(RAM_CTRL_IN)
+    );
+
+    MEM mem_stage (
+        .EX_OUT(EX_OUT_IN),                   
+        .EX_DI(EX_DI_IN),                   
+        .EX_RD(EX_RD_IN), 
+        .L(L_IN),
+        .EX_RF_LE(RF_LE_IN), 
+        .RAM_CTRL(RAM_CTRL_IN),        
+
+        // Outputs
+        .MEM_RD(MEM_RD), 
+        .MEM_OUT(MEM_OUT),
+        .MEM_RF_LE(MEM_RF_LE) 
     );
 
     //
-    // Instruction WriteBack Stage
+    // WriteBack Stage
     //
-
-    wire RF_LE_WB;
 
     MEM_WB_REG mem_wb_reg (
-        .clk(Clk),
-        .reset(Rst),
+        .clk(CLK),
+        .reset(RST),
 
-        // Control signals from EX_MEM_REG
-        .RF_LE_in(RF_LE_MEM),
+        .MEM_RD(MEM_RD),
+        .MEM_OUT(MEM_OUT),
+        .MEM_RF_LE(MEM_RF_LE),
 
-        // Outputs to WB stage
-        .RF_LE_out(RF_LE_WB)
+        // Output
+        .WB_RD(WB_RD),
+        .WB_OUT(WB_OUT),
+        .WB_RF_LE(WB_RF_LE)
     );
 
-// IF stage
-assign instruction_out = instruction;
-assign front_q_out = front_q;
+    //
+    // Data hazzard detection unit handle
+    //
+    DHDU dhdu (
+        .RA(RA),     
+        .RB(RB),     
 
-// Control Unit output (after CU_MUX)
-assign SRD_out = SRD_MUX;
-assign PSW_LE_RE_out = PSW_LE_RE_MUX;
-assign B_out = B_MUX;
-assign SOH_OP_out = SOH_OP_MUX;
-assign ALU_OP_out = ALU_OP_MUX;
-assign RAM_CTRL_out = RAM_CTRL_MUX;
-assign L_out = L_MUX;
-assign RF_LE_out = RF_LE_MUX;
-assign ID_SR_out = ID_SR_MUX;
-assign UB_out = UB_MUX;
-assign SHF_out = SHF_MUX;
+        .EX_RD(EX_RD),  
+        .MEM_RD(MEM_RD), 
+        .WB_RD(WB_RD),  
 
-// EX stage
-assign SRD_EX_out = SRD_EX;
-assign PSW_LE_RE_EX_out = PSW_LE_RE_EX;
-assign B_EX_out = B_EX;
-assign SOH_OP_EX_out = SOH_OP_EX;
-assign ALU_OP_EX_out = ALU_OP_EX;
-assign RAM_CTRL_EX_out = RAM_CTRL_EX;
-assign L_EX_out = L_EX;
-assign RF_LE_EX_out = RF_LE_EX;
-assign ID_SR_EX_out = ID_SR_EX;
-assign UB_EX_out = UB_EX;
-assign SHF_EX_out = SHF_EX;
+        .EX_RF_LE(EX_RF_LE),
+        .MEM_RF_LE(MEM_RF_LE),
+        .WB_RF_LE(WB_RF_LE),
 
-// MEM stage
-assign RAM_CTRL_MEM_out = RAM_CTRL_MEM;
-assign L_MEM_out = L_MEM;
-assign RF_LE_MEM_out = RF_LE_MEM;
-
-// WB stage
-assign RF_LE_WB_out = RF_LE_WB;
-
-
+        .SR(ID_SR),
+        .EX_L(MEM_L), 
+        .NOP(NOP),
+        .LE(LE),  
+        .A_S(A_S),    
+        .B_S(B_S)     
+    );
 endmodule

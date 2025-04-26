@@ -1,4 +1,5 @@
 `include "ROM.v"
+`include "RAM.v"
 `include "PC_ADDER.v"
 `include "PIPELINE_REGISTERS.v"
 
@@ -13,6 +14,7 @@
 module IF (
   input wire CLK, RST, LE,
   input wire S,
+  input wire [7:0] TA,
 
   output wire [7:0]  address,
   output wire [31:0] instruction
@@ -62,37 +64,40 @@ module IF (
 endmodule
 
 module ID (
-  input wire CLK,
-  input wire S,
-  input wire R_LE,
-  input wire [7:0]  address,
-  input wire [31:0] instruction,
-  input wire [4:0]  RD,
-  input wire [31:0] PD_EX,
-  input wire [31:0] PD_MEM,
-  input wire [31:0] PD_WB,
-  
-  input wire [1:0]  A_S,
-  input wire [1:0]  B_S,
+    input wire CLK,
+    input wire S,
+    input wire R_LE,
+    input wire [7:0]  address,
+    input wire [31:0] instruction,
+    input wire [4:0]  RD,
+    input wire [31:0] PD_EX,
+    input wire [31:0] PD_MEM,
+    input wire [31:0] PD_WB,
 
-  output wire [7:0] return_address,
-  output wire [7:0] target_address,
-  output wire [31:0] FPA,
-  output wire [31:0] FPB,
-  output wire [2:0]  COND,
-  output wire [20:0] IM,
-  output wire [4:0]  IDR,
+    input wire [1:0]  A_S,
+    input wire [1:0]  B_S,
 
-  // Control unit signals
-  output wire [1:0] PSW_LE_RE;       // 2-bit PSW Load / Read Enable
-  output wire B;                     // Branch
-  output wire [2:0] SOH_OP;          // 3-bit Operand handler opcode
-  output wire [3:0] ALU_OP;          // 4-bit ALU opcode
-  output wire [3:0] RAM_CTRL;        // 4-bit Ram control
-  output wire L;                     // Select Dataout from RAM
-  output wire RF_LE;                 // Register File Load Enable
-  output wire [1:0] ID_SR;           // 2-bit Instruction Decode Shift Register
-  output wire UB;                    // Unconditional Branch
+    output wire [7:0] return_address,
+    output wire [7:0] target_address,
+    output wire [31:0] FPA,
+    output wire [31:0] FPB,
+    output wire [2:0]  COND,
+    output wire [20:0] IM,
+    output wire [4:0]  IDR,
+
+    output reg [4:0] RA,
+    output reg [4:0] RB,
+
+    // Control unit signals
+    output wire [1:0] PSW_LE_RE;       // 2-bit PSW Load / Read Enable
+    output wire B;                     // Branch
+    output wire [2:0] SOH_OP;          // 3-bit Operand handler opcode
+    output wire [3:0] ALU_OP;          // 4-bit ALU opcode
+    output wire [3:0] RAM_CTRL;        // 4-bit Ram control
+    output wire L;                     // Select Dataout from RAM
+    output wire RF_LE;                 // Register File Load Enable
+    output wire [1:0] ID_SR;           // 2-bit Instruction Decode Shift Register
+    output wire UB;                    // Unconditional Branch
 );
 
   wire [4:0] RB_SHF_MUX;
@@ -180,8 +185,8 @@ module ID (
   );
 
   TP_REGISTER_FILE reg_file (
-      .PA(RA), 
-      .PB(RB), 
+      .PA(PA), 
+      .PB(PB), 
 
       .PW(PD_WB), 
 
@@ -215,6 +220,8 @@ module ID (
       .FW_P(FPB)
   );
 
+  assign RA = instruction[25:21];
+  assign RB = RB_SHF_MUX;
   assign IM = instruction[20:0];
   assign COND = instruction[15:13];
 
@@ -240,7 +247,6 @@ module EX (
   input wire [3:0] RAM_CTRL,        
   input wire L,                    
   input wire RF_LE,                
-  input wire [1:0] ID_SR,           
   input wire UB,
 
   output reg EX_J,                   
@@ -324,7 +330,37 @@ module EX (
 endmodule
 
 module MEM (
+    input wire [31:0] EX_OUT,                   
+    input wire [31:0] EX_DI,                   
+    input wire [4:0]  EX_RD, 
+    input wire L,
+    input wire EX_RF_LE, 
+    input wire [3:0]  RAM_CTRL,        
 
+    output reg [4:0]  MEM_RD, 
+    output reg [31:0] MEM_OUT,
+    output reg MEM_RF_LE 
 );
+
+    wire [31:0] DO; 
+
+    RAM256x8 ram (
+        .DataOut(DO), 
+        .Enable(RAM_CTRL[0]),  
+        .ReadWrite(RAM_CTRL[1]),
+        .Address(EX_OUT[7:0]),  
+        .Size(RAM_CTRL[3:2]),     
+        .DataIn(EX_DI)  
+    );
+
+    MUX_MEM mux_mem (
+        .S(L),           
+        .DO(DO),  
+        .EX(EX_OUT),   
+        .O(MEM_OUT) 
+    );
+
+    assign MEM_RF_LE = EX_RF_LE;
+    assign MEM_RD = EX_RD;
 
 endmodule

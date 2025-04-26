@@ -10,10 +10,10 @@ module DHDU (
   input wire MEM_RF_LE,    // Destination register write enable signal in MEM stage
   input wire WB_RF_LE,     // Destination register write enable signal in WB stage
 
-  input wire [1:0] SR      // Selected operand register (RA, RB)
-  input wire EX_L          // Forward hazard from execution phase 
+  input wire [1:0] SR,     // Selected operand register (RA, RB)
+  input wire EX_L,         // Forward hazard from execution phase 
   output reg NOP,          // Stall signal for pipeline
-  output reg LE            // Load enable signal for the ID stage 
+  output reg LE,           // Load enable signal for the ID stage 
   output reg [1:0] A_S,    // Forwarding control for RA
   output reg [1:0] B_S     // Forwarding control for RB
 );
