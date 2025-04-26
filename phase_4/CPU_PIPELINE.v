@@ -56,7 +56,7 @@ module CPU_PIPELINE (
     // DECODE STAGE
     // 
 
-    wire [31:0] ID_TA;
+    wire [7:0]  ID_TA;
     wire [7:0]  ID_RET_ADDRESS;
     wire [31:0] ID_FPA;
     wire [31:0] ID_FPB;
@@ -135,7 +135,7 @@ module CPU_PIPELINE (
     wire [4:0]  EX_RD;                   
     wire EX_MEM_L;                   
     wire EX_MEM_RF_LE; 
-    wire RAM_CTRL; 
+    wire [3:0] RAM_CTRL; 
 
     ID_EX_REG id_ex_reg (
         .clk(CLK),
@@ -181,7 +181,7 @@ module CPU_PIPELINE (
         .RAM_CTRL_out(EX_RAM_CTRL),
         .L_out(EX_L),
         .RF_LE_out(EX_RF_LE),
-        .UB_out(EX_UB),
+        .UB_out(EX_UB)
     );
 
     EX ex_stage (
@@ -213,7 +213,7 @@ module CPU_PIPELINE (
         .EX_RD(EX_RD),                   
         .EX_L(EX_MEM_L),                   
         .EX_RF_LE(EX_MEM_RF_LE), 
-        .RAM_CTRL(RAM_CTRL) 
+        .RAM_CTRL_OUT(RAM_CTRL) 
     );
 
     // 

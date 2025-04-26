@@ -85,19 +85,19 @@ module ID (
     output wire [20:0] IM,
     output wire [4:0]  IDR,
 
-    output reg [4:0] RA,
-    output reg [4:0] RB,
+    output wire [4:0] RA,
+    output wire [4:0] RB,
 
     // Control unit signals
-    output wire [1:0] PSW_LE_RE;       // 2-bit PSW Load / Read Enable
-    output wire B;                     // Branch
-    output wire [2:0] SOH_OP;          // 3-bit Operand handler opcode
-    output wire [3:0] ALU_OP;          // 4-bit ALU opcode
-    output wire [3:0] RAM_CTRL;        // 4-bit Ram control
-    output wire L;                     // Select Dataout from RAM
-    output wire RF_LE;                 // Register File Load Enable
-    output wire [1:0] ID_SR;           // 2-bit Instruction Decode Shift Register
-    output wire UB;                    // Unconditional Branch
+    output wire [1:0] PSW_LE_RE,       // 2-bit PSW Load / Read Enable
+    output wire B,                     // Branch
+    output wire [2:0] SOH_OP,          // 3-bit Operand handler opcode
+    output wire [3:0] ALU_OP,          // 4-bit ALU opcode
+    output wire [3:0] RAM_CTRL,        // 4-bit Ram control
+    output wire L,                     // Select Dataout from RAM
+    output wire RF_LE,                 // Register File Load Enable
+    output wire [1:0] ID_SR,           // 2-bit Instruction Decode Shift Register
+    output wire UB                     // Unconditional Branch
 );
 
   wire [4:0] RB_SHF_MUX;
@@ -135,7 +135,7 @@ module ID (
       .SHF(CU_SHF)
   );
 
-  MUX_ID_IRD mux_id_idr (
+  MUX_ID_IDR mux_id_idr (
       .S(CU_SRD),
       .I_0(instruction[4:0]),
       .I_1(instruction[25:21]),
@@ -144,7 +144,7 @@ module ID (
       .IDR(IDR)
   );
 
-  CU_MUX cu_mux (
+  MUX_CU mux_cu (
       .S(S),
 
       .PSW_LE_RE_in(CU_PSW_LE_RE),
@@ -249,14 +249,14 @@ module EX (
   input wire RF_LE,                
   input wire UB,
 
-  output reg EX_J,                   
-  output reg [7:0] TARGET_ADDRESS,
-  output reg [31:0] EX_OUT,                   
-  output reg [31:0] EX_DI,                   
-  output reg [4:0]  EX_RD,                   
-  output reg EX_L,                   
-  output reg EX_RF_LE, 
-  output reg RAM_CTRL 
+  output wire EX_J,                   
+  output wire [7:0] TARGET_ADDRESS,
+  output wire [31:0] EX_OUT,                   
+  output wire [31:0] EX_DI,                   
+  output wire [4:0]  EX_RD,                   
+  output wire EX_L,                   
+  output wire EX_RF_LE, 
+  output wire [3:0] RAM_CTRL_OUT 
 );
 
     assign EX_L = L;
@@ -264,8 +264,9 @@ module EX (
     assign EX_DI = FPB;
     assign EX_RD = IDR;
     assign TARGET_ADDRESS = target_address;
+    assign RAM_CTRL_OUT = RAM_CTRL;
 
-    wire [31:0] N;
+    wire [31:0] SOH_OUT;
     wire [31:0] ALU_OUT;
     wire Ci;
 
@@ -280,12 +281,12 @@ module EX (
         .RB(FPB),
         .I(IM),   
         .S(SOH_OP),   
-        .N(N) 
+        .N(SOH_OUT) 
     );
 
     ALU alu (
         .A(FPA),         
-        .B(N),         
+        .B(SOH_OUT),         
         .Ci(Ci),         
         .OP(ALU_OP),         
         .Out(ALU_OUT),
@@ -337,9 +338,9 @@ module MEM (
     input wire EX_RF_LE, 
     input wire [3:0]  RAM_CTRL,        
 
-    output reg [4:0]  MEM_RD, 
-    output reg [31:0] MEM_OUT,
-    output reg MEM_RF_LE 
+    output wire [4:0]  MEM_RD, 
+    output wire [31:0] MEM_OUT,
+    output wire MEM_RF_LE 
 );
 
     wire [31:0] DO; 

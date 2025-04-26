@@ -66,21 +66,21 @@ module MUX_IF (
 endmodule
 
 
-module MUX_ID_IRD (
+module MUX_ID_IDR (
     input wire [1:0] S,     // Select slot for target register
     input wire [4:0] I_0,   // I[4:0]
     input wire [4:0] I_1,   // I[25:21]
     input wire [4:0] I_2,   // I[20:16]
 
-    output reg [4:0] IRD    // Target Register
+    output reg [4:0] IDR    // Target Register
 );
 
     always @(*) begin
         case (S)
-            2'b00: IRD <= I_0; // I[4:0]
-            2'b01: IRD <= I_1; // I[25:21]
-            2'b10: IRD <= I_2; // I[20:16]
-            default: IRD <= 8'b00000000; // Default case
+            2'b00: IDR <= I_0; // I[4:0]
+            2'b01: IDR <= I_1; // I[25:21]
+            2'b10: IDR <= I_2; // I[20:16]
+            default: IDR <= 8'b00000000; // Default case
         endcase
     end
 endmodule

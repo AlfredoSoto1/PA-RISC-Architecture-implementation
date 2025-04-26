@@ -28,22 +28,22 @@ endmodule
 
 
 module IF_ID_REGISTER (
-    input wire LE, Rst, Clk  // Load enable, synchronous reset, clock
-    input wire CLR,          // Clear signal
+    input wire LE, Rst, Clk,               // Load enable, synchronous reset, clock
+    input wire CLR,                        // Clear signal
     input wire [7:0]  front_address,       // 8-bit input
     input wire [31:0] fetched_instruction, // 32-bit input
     
     output reg [7:0]  B_PC,                // 8-bit output 
-    output reg [31:0] instruction,         // 32-bit output 
-    
+    output reg [31:0] instruction          // 32-bit output 
 );
     always @(posedge Clk) begin
-        if (Rst || CLR)
+        if (Rst || CLR) begin
             B_PC <= 8'h0;                     
             instruction <= 32'h0;               
-        else if (LE)
+        end else if (LE) begin
             B_PC <= front_address; 
             instruction <= fetched_instruction; 
+        end
     end
 endmodule
 
@@ -52,10 +52,10 @@ module ID_EX_REG (
     input wire clk, reset,
 
     // Register values and addresses
-    input wire [31:0] RA_in;
-    input wire [31:0] RB_in;
-    input wire [7:0] TA_in;
-    input wire [7:0] R_in;
+    input wire [31:0] RA_in,
+    input wire [31:0] RB_in,
+    input wire [7:0] TA_in,
+    input wire [7:0] R_in,
 
     // Condition and Immediate values
     input wire [4:0] RD_in,
@@ -73,10 +73,10 @@ module ID_EX_REG (
     input wire UB_in,
 
     // Output Register values and addresses
-    output reg [31:0] RA_out;
-    output reg [31:0] RB_out;
-    output reg [7:0] TA_out;
-    output reg [7:0] R_out;
+    output reg [31:0] RA_out,
+    output reg [31:0] RB_out,
+    output reg [7:0] TA_out,
+    output reg [7:0] R_out,
 
     // Output condition and Immediate values
     output reg [4:0] RD_out,
@@ -91,7 +91,7 @@ module ID_EX_REG (
     output reg [3:0] RAM_CTRL_out,
     output reg L_out,
     output reg RF_LE_out,
-    output reg UB_out,
+    output reg UB_out
 );
 
     always @(posedge clk) begin

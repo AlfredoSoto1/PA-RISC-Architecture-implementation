@@ -1,4 +1,4 @@
-module ConditionHandler (
+module CH (
     input wire B,           // Branch instruction
     input wire Odd,         // Odd Result
     input wire Z, N, C, V,  // ALU Flags  
