@@ -163,7 +163,7 @@ module CONTROL_UNIT (
                 RAM_CTRL = 4'b1001; // (10) Read word (0)WB (1)E 
                 L = 1;              // Select RAM output 
                 RF_LE = 1;          // Write to register 
-                ID_SR = 2'b10;      // Use register 'b' 
+                ID_SR = 2'b01;      // Use register 'a' 
                 UB = 0;             // No unconditional branch  
                 SHF = 0;            // No shift   
                 end
@@ -177,7 +177,7 @@ module CONTROL_UNIT (
                 RAM_CTRL = 4'b0101; // (01) Read word (0)WB (1)E
                 L = 1;              // Select RAM output 
                 RF_LE = 1;          // Write to register 
-                ID_SR = 2'b10;      // Use register 'b' 
+                ID_SR = 2'b01;      // Use register 'a'  
                 UB = 0;             // No unconditional branch  
                 SHF = 0;            // No shift   
                 end
@@ -191,7 +191,7 @@ module CONTROL_UNIT (
                 RAM_CTRL = 4'b0001; // (00) Read word (0)WB (1)E
                 L = 1;              // Select RAM output 
                 RF_LE = 1;          // Write to register 
-                ID_SR = 2'b10;      // Use register 'b' 
+                ID_SR = 2'b01;      // Use register 'a'  
                 UB = 0;             // No unconditional branch 
                 SHF = 0;            // No shift   
                 end

@@ -78,6 +78,7 @@ module CPU_PIPELINE (
         .R_LE(WB_RF_LE),
         .address(B_PC),
         .instruction(instruction),
+
         .RD(WB_RD),
         .PD_EX(EX_OUT),
         .PD_MEM(MEM_OUT),
@@ -298,7 +299,7 @@ module CPU_PIPELINE (
         .WB_RF_LE(WB_RF_LE),
 
         .SR(ID_SR),
-        .EX_L(MEM_L), 
+        .EX_L(EX_MEM_L), 
         .NOP(NOP),
         .LE(LE),  
         .A_S(A_S),    
@@ -349,7 +350,7 @@ module tb_CPU_PIPELINE;
         #3 RST = 0;
 
         // Wait for the simulation to finish
-        #100 $display("Program finished.");
+        #500 $display("Program finished.");
 
         // dump_data_memory();
         $finish;
@@ -371,19 +372,11 @@ module tb_CPU_PIPELINE;
         //     uut.id_stage.control_unit.SHF
         // );
         
-        $monitor("RA: %b | RB: %b | PA: %b | PB: %b | alu: %b",
-            uut.id_stage.reg_file.RA,
-            uut.id_stage.reg_file.RB,
-            uut.id_stage.reg_file.PA,
-            uut.id_stage.reg_file.PB,
-            uut.id_ex_reg.IM_out
-        );
-
         // $monitor("ALU_OUT: %b",
         //     uut.ex_stage.EX_OUT
         // );
 
-        // Monitor for test #3 (Validation program)
+        // // Monitor for test #3 (Validation program)
         // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
         //     uut.if_stage.front_q,
         //     uut.id_stage.reg_file.R1.Q,
@@ -391,6 +384,49 @@ module tb_CPU_PIPELINE;
         //     uut.id_stage.reg_file.R3.Q,
         //     uut.id_stage.reg_file.R5.Q,
         //     uut.id_stage.reg_file.R6.Q
+        // );
+
+
+        // $monitor("Front: %d | DI %b | DO %b | EX_OUT %b | MEM_OUT %b",
+        //     uut.if_stage.front_q, 
+        //     uut.mem_stage.EX_DI, 
+        //     uut.mem_stage.DO, 
+        //     uut.mem_stage.EX_OUT, 
+        //     uut.mem_stage.MEM_OUT
+        // );
+
+        $monitor("Front: %d | WB_RD %b | WB_OUT %b | WB_RF_LE %b",
+            uut.if_stage.front_q, 
+            uut.WB_RD,
+            uut.mem_stage.mux_mem.S,
+            uut.WB_RF_LE
+        );
+
+        // $monitor("Front: %d | R_LE %b | RD %b | PD_EX %b | PD_MEM %b | PD_WB %b",
+        //     uut.if_stage.front_q, 
+        //     uut.id_stage.R_LE,
+        //     uut.id_stage.RD,
+        //     uut.id_stage.PD_EX,
+        //     uut.id_stage.PD_MEM,
+        //     uut.id_stage.PD_WB
+        // );
+
+        // $monitor("Front: %d | RA %b | RB %b | EX_RD %b | MEM_RD %b | WB_RD %b | EX_RF_LE %b | MEM_RF_LE %b | WB_RF_LE %b | SR %b | EX_L %b | NOP %b | LE %b | A_S %b | B_S %b",
+        //     uut.if_stage.front_q, 
+        //     uut.dhdu.RA,
+        //     uut.dhdu.RB,
+        //     uut.dhdu.EX_RD,
+        //     uut.dhdu.MEM_RD,
+        //     uut.dhdu.WB_RD,
+        //     uut.dhdu.EX_RF_LE,
+        //     uut.dhdu.MEM_RF_LE,
+        //     uut.dhdu.WB_RF_LE,
+        //     uut.dhdu.SR,
+        //     uut.dhdu.EX_L,
+        //     uut.dhdu.NOP,
+        //     uut.dhdu.LE,
+        //     uut.dhdu.A_S,
+        //     uut.dhdu.B_S
         // );
     end
 

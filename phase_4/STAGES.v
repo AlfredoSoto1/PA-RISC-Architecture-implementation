@@ -69,6 +69,7 @@ module ID (
     input wire R_LE,
     input wire [7:0]  address,
     input wire [31:0] instruction,
+    
     input wire [4:0]  RD,
     input wire [31:0] PD_EX,
     input wire [31:0] PD_MEM,
