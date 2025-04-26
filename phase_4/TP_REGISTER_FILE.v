@@ -183,5 +183,5 @@ module TP_REGISTER_FILE (
                     Qs11,Qs12,Qs13,Qs14,Qs15,
                     Qs16,Qs17,Qs18,Qs19,Qs20,
                     Qs21,Qs22,Qs23,Qs24,Qs25,
-                    Qs26,Qs27,Qs28,Qs29,Qs30,Qs31); 
+                    Qs26,Qs27,Qs28,Qs29,Qs30,Qs31);
 endmodule 

@@ -102,6 +102,10 @@ module ID_EX_REG (
             TA_out <= 0;
             R_out <= 0;
 
+            RD_out <= 0;
+            COND_out <= 0;
+            IM_out <= 0;
+
             PSW_LE_RE_out <= 0;
             B_out <= 0;
             SOH_OP_out <= 0;
@@ -116,6 +120,10 @@ module ID_EX_REG (
             RB_out <= RB_in;
             TA_out <= TA_in;
             R_out <= R_in;
+
+            RD_out <= RD_in;
+            COND_out <= COND_in;
+            IM_out <= IM_in;
 
             PSW_LE_RE_out <= PSW_LE_RE_in;
             B_out <= B_in;

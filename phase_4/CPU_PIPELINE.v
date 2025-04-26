@@ -219,7 +219,6 @@ module CPU_PIPELINE (
     // 
     // Memory Stage
     // 
-
     wire [31:0] EX_OUT_IN;
     wire [31:0] EX_DI_IN;
     wire [4:0]  EX_RD_IN;
@@ -305,4 +304,94 @@ module CPU_PIPELINE (
         .A_S(A_S),    
         .B_S(B_S)     
     );
+endmodule
+
+
+// Testbench for CPU_PIPELINE
+
+module tb_CPU_PIPELINE;
+
+    reg CLK = 0;
+    reg RST = 1;
+
+    CPU_PIPELINE uut (
+        .CLK(CLK),
+        .RST(RST)
+    );
+
+    // Clock: updates every 2 time units
+    always #2 CLK = ~CLK;
+
+    task dump_data_memory;
+        integer i;
+        begin
+            $display("Memory content:");
+            for (i = 0; i < 256; i = i + 4) begin
+                $write("%b %b %b %b\n", 
+                uut.mem_stage.ram.Mem[i], 
+                uut.mem_stage.ram.Mem[i+1], 
+                uut.mem_stage.ram.Mem[i+2], 
+                uut.mem_stage.ram.Mem[i+3]);
+
+                // $write("%b %b %b %b\n", 
+                // uut.if_stage.instr_mem.Mem[i], 
+                // uut.if_stage.instr_mem.Mem[i+1], 
+                // uut.if_stage.instr_mem.Mem[i+2], 
+                // uut.if_stage.instr_mem.Mem[i+3]);
+            end
+        end
+    endtask
+
+    initial begin
+        $display("Starting simulation...");
+
+        // Aplicar reset
+        #3 RST = 0;
+
+        // Wait for the simulation to finish
+        #100 $display("Program finished.");
+
+        // dump_data_memory();
+        $finish;
+    end
+
+    initial begin
+
+        // $monitor("SRD: %b | PSW_LE_RE: %b | B: %b | SOH_OP: %b | ALU_OP: %b | RAM_CTRL: %b | L: %b | RF_LE: %b | ID_SR: %b | UB: %b | SHF: %b",
+        //     uut.id_stage.control_unit.SRD,
+        //     uut.id_stage.control_unit.PSW_LE_RE,
+        //     uut.id_stage.control_unit.B,
+        //     uut.id_stage.control_unit.SOH_OP,
+        //     uut.id_stage.control_unit.ALU_OP,
+        //     uut.id_stage.control_unit.RAM_CTRL,
+        //     uut.id_stage.control_unit.L,
+        //     uut.id_stage.control_unit.RF_LE,
+        //     uut.id_stage.control_unit.ID_SR,
+        //     uut.id_stage.control_unit.UB,
+        //     uut.id_stage.control_unit.SHF
+        // );
+        
+        $monitor("RA: %b | RB: %b | PA: %b | PB: %b | alu: %b",
+            uut.id_stage.reg_file.RA,
+            uut.id_stage.reg_file.RB,
+            uut.id_stage.reg_file.PA,
+            uut.id_stage.reg_file.PB,
+            uut.id_ex_reg.IM_out
+        );
+
+        // $monitor("ALU_OUT: %b",
+        //     uut.ex_stage.EX_OUT
+        // );
+
+        // Monitor for test #3 (Validation program)
+        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+        //     uut.if_stage.front_q,
+        //     uut.id_stage.reg_file.R1.Q,
+        //     uut.id_stage.reg_file.R2.Q,
+        //     uut.id_stage.reg_file.R3.Q,
+        //     uut.id_stage.reg_file.R5.Q,
+        //     uut.id_stage.reg_file.R6.Q
+        // );
+    end
+
 endmodule

@@ -373,4 +373,20 @@ module CONTROL_UNIT (
         end
     end
 
+    // initial begin
+    //     $monitor("SRD: %b | PSW_LE_RE: %b | B: %b | SOH_OP: %b | ALU_OP: %b | RAM_CTRL: %b | L: %b | RF_LE: %b | ID_SR: %b | UB: %b | SHF: %b",
+    //         SRD,
+    //         PSW_LE_RE,
+    //         B,
+    //         SOH_OP,
+    //         ALU_OP,
+    //         RAM_CTRL,
+    //         L,
+    //         RF_LE,
+    //         ID_SR,
+    //         UB,
+    //         SHF
+    //     );
+    // end
+
 endmodule

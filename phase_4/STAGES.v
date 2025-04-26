@@ -30,8 +30,8 @@ module IF (
         .Q(back_q),
         .D(next_pc),
         .LE(LE),
-        .Rst(Rst),
-        .Clk(Clk)
+        .Rst(RST),
+        .Clk(CLK)
     );
 
     MUX_IF pc_mux (
@@ -45,8 +45,8 @@ module IF (
         .Q(front_q),
         .D(jump_mux),
         .LE(LE),
-        .Rst(Rst),
-        .Clk(Clk)
+        .Rst(RST),
+        .Clk(CLK)
     );
 
     PC_ADDER pc_adder (
