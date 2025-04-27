@@ -352,13 +352,14 @@ module tb_CPU_PIPELINE;
         // Wait for the simulation to finish
         #500 $display("Program finished.");
 
-        // dump_data_memory();
+        dump_data_memory();
         $finish;
     end
 
     initial begin
 
-        // $monitor("SRD: %b | PSW_LE_RE: %b | B: %b | SOH_OP: %b | ALU_OP: %b | RAM_CTRL: %b | L: %b | RF_LE: %b | ID_SR: %b | UB: %b | SHF: %b",
+        // $monitor("Front: %d | SRD: %b | PSW_LE_RE: %b | B: %b | SOH_OP: %b | ALU_OP: %b | RAM_CTRL: %b | L: %b | RF_LE: %b | ID_SR: %b | UB: %b | SHF: %b",
+        //     uut.if_stage.front_q,
         //     uut.id_stage.control_unit.SRD,
         //     uut.id_stage.control_unit.PSW_LE_RE,
         //     uut.id_stage.control_unit.B,
@@ -372,19 +373,38 @@ module tb_CPU_PIPELINE;
         //     uut.id_stage.control_unit.SHF
         // );
         
-        // $monitor("ALU_OUT: %b",
-        //     uut.ex_stage.EX_OUT
-        // );
-
-        // // Monitor for test #3 (Validation program)
-        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+        // // Monitor for test #1 (Validation program)
+        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d",
         //     uut.if_stage.front_q,
         //     uut.id_stage.reg_file.R1.Q,
         //     uut.id_stage.reg_file.R2.Q,
         //     uut.id_stage.reg_file.R3.Q,
-        //     uut.id_stage.reg_file.R5.Q,
-        //     uut.id_stage.reg_file.R6.Q
+        //     uut.id_stage.reg_file.R5.Q
         // );
+
+        // // Monitor for test #2 (Validation program)
+        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR4: %d | GR5: %d | GR10: %d | GR11: %d | GR12: %d | GR14: %d",
+        //     uut.if_stage.front_q,
+        //     uut.id_stage.reg_file.R1.Q,
+        //     uut.id_stage.reg_file.R2.Q,
+        //     uut.id_stage.reg_file.R3.Q,
+        //     uut.id_stage.reg_file.R4.Q,
+        //     uut.id_stage.reg_file.R5.Q,
+        //     uut.id_stage.reg_file.R10.Q,
+        //     uut.id_stage.reg_file.R11.Q,
+        //     uut.id_stage.reg_file.R12.Q,
+        //     uut.id_stage.reg_file.R14.Q
+        // );
+
+        // Monitor for test #3 (Validation program)
+        $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+            uut.if_stage.front_q,
+            uut.id_stage.reg_file.R1.Q,
+            uut.id_stage.reg_file.R2.Q,
+            uut.id_stage.reg_file.R3.Q,
+            uut.id_stage.reg_file.R5.Q,
+            uut.id_stage.reg_file.R6.Q
+        );
 
 
         // $monitor("Front: %d | DI %b | DO %b | EX_OUT %b | MEM_OUT %b",
@@ -395,12 +415,12 @@ module tb_CPU_PIPELINE;
         //     uut.mem_stage.MEM_OUT
         // );
 
-        $monitor("Front: %d | WB_RD %b | WB_OUT %b | WB_RF_LE %b",
-            uut.if_stage.front_q, 
-            uut.WB_RD,
-            uut.mem_stage.mux_mem.S,
-            uut.WB_RF_LE
-        );
+        // $monitor("Front: %d | WB_RD %b | WB_OUT %b | WB_RF_LE %b",
+        //     uut.if_stage.front_q, 
+        //     uut.WB_RD,
+        //     uut.mem_stage.mux_mem.S,
+        //     uut.WB_RF_LE
+        // );
 
         // $monitor("Front: %d | R_LE %b | RD %b | PD_EX %b | PD_MEM %b | PD_WB %b",
         //     uut.if_stage.front_q, 

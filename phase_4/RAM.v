@@ -10,9 +10,11 @@ module RAM256x8 (
     reg [7:0] Mem[0:255]; // Memoria de 256 bytes
 
     // Precarga de memoria desde un archivo de texto
-    // initial begin
-    //     $readmemb("file_precarga_phase_1.txt", Mem);
-    // end
+    initial begin
+        // $readmemb("test_1_instructions.txt", Mem);
+        // $readmemb("test_2_instructions.txt", Mem);
+        $readmemb("test_3_instructions.txt", Mem);
+    end
 
     always @(*) begin
         // Read from memory if ReadWrite is enabled

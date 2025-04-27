@@ -28,13 +28,13 @@ module DHDU (
     NOP = 1'b0;
     LE = 1'b1; 
 
-    if (EX_L && ((SR == 2'b01 && (RA == EX_RD)) || (SR == 2'b10 && (RB == EX_RD)))) begin
+    if (EX_L && ((SR[0] == 1 && (RA == EX_RD)) || (SR[1] == 1 && (RB == EX_RD)))) begin
       LE = 0; // Disable load enable signal
       NOP = 1; // Set NOP signal to indicate hazard
     end else begin
 
       // Criteria for Hazard Detection for Source Register RA
-      if (SR == 2'b01) begin
+      if (SR[0] == 1) begin
         if (EX_RF_LE && (RA == EX_RD)) begin
           A_S = 2'b01; // Forward from EX stage
         end else if (MEM_RF_LE && (RA == MEM_RD)) begin
@@ -47,7 +47,7 @@ module DHDU (
       end
 
       // Criteria for Hazard Detection for Source Register RB
-      if (SR == 2'b10) begin
+      if (SR[1] == 1) begin
         if (EX_RF_LE && (RB == EX_RD)) begin
           B_S = 2'b01; // Forward from EX stage
         end else if (MEM_RF_LE && (RB == MEM_RD)) begin
