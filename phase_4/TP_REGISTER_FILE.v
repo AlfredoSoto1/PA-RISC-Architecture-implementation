@@ -102,6 +102,7 @@ endmodule
 
 module RF_REGISTER32 (
     output reg [31:0] Q,     // 32-bit output 
+    output wire signed [31:0] Q_S,  // 32-bit signed output 
     input wire [31:0] D,     // 32-bit input
     input wire LE, Clr, Clk  // Load enable, clear, clock
 );
@@ -113,6 +114,8 @@ module RF_REGISTER32 (
             // If load enable is high, store the input value
             Q <= D;
     end
+
+    assign Q_S = Q;
 endmodule
 
 module TP_REGISTER_FILE (
@@ -134,38 +137,38 @@ module TP_REGISTER_FILE (
     RF_DECODER5x32 BD1 (O,RW,LE);       // 5x32 Decoder to load enable the registers
 
     // 32-bit registers
-    RF_REGISTER32 R0  (Qs0, PW, O[0],  1'b0, Clk);
-    RF_REGISTER32 R1  (Qs1, PW, O[1],  1'b0, Clk);
-    RF_REGISTER32 R2  (Qs2, PW, O[2],  1'b0, Clk);
-    RF_REGISTER32 R3  (Qs3, PW, O[3],  1'b0, Clk);
-    RF_REGISTER32 R4  (Qs4, PW, O[4],  1'b0, Clk);
-    RF_REGISTER32 R5  (Qs5, PW, O[5],  1'b0, Clk);
-    RF_REGISTER32 R6  (Qs6, PW, O[6],  1'b0, Clk);
-    RF_REGISTER32 R7  (Qs7, PW, O[7],  1'b0, Clk);
-    RF_REGISTER32 R8  (Qs8, PW, O[8],  1'b0, Clk);
-    RF_REGISTER32 R9  (Qs9, PW, O[9],  1'b0, Clk);
-    RF_REGISTER32 R10 (Qs10,PW, O[10], 1'b0, Clk);
-    RF_REGISTER32 R11 (Qs11,PW, O[11], 1'b0, Clk);
-    RF_REGISTER32 R12 (Qs12,PW, O[12], 1'b0, Clk);
-    RF_REGISTER32 R13 (Qs13,PW, O[13], 1'b0, Clk);
-    RF_REGISTER32 R14 (Qs14,PW, O[14], 1'b0, Clk);
-    RF_REGISTER32 R15 (Qs15,PW, O[15], 1'b0, Clk);
-    RF_REGISTER32 R16 (Qs16,PW, O[16], 1'b0, Clk);
-    RF_REGISTER32 R17 (Qs17,PW, O[17], 1'b0, Clk);
-    RF_REGISTER32 R18 (Qs18,PW, O[18], 1'b0, Clk);
-    RF_REGISTER32 R19 (Qs19,PW, O[19], 1'b0, Clk);
-    RF_REGISTER32 R20 (Qs20,PW, O[20], 1'b0, Clk);
-    RF_REGISTER32 R21 (Qs21,PW, O[21], 1'b0, Clk);
-    RF_REGISTER32 R22 (Qs22,PW, O[22], 1'b0, Clk);
-    RF_REGISTER32 R23 (Qs23,PW, O[23], 1'b0, Clk);
-    RF_REGISTER32 R24 (Qs24,PW, O[24], 1'b0, Clk);
-    RF_REGISTER32 R25 (Qs25,PW, O[25], 1'b0, Clk);
-    RF_REGISTER32 R26 (Qs26,PW, O[26], 1'b0, Clk);
-    RF_REGISTER32 R27 (Qs27,PW, O[27], 1'b0, Clk);
-    RF_REGISTER32 R28 (Qs28,PW, O[28], 1'b0, Clk);
-    RF_REGISTER32 R29 (Qs29,PW, O[29], 1'b0, Clk);
-    RF_REGISTER32 R30 (Qs30,PW, O[30], 1'b0, Clk);
-    RF_REGISTER32 R31 (Qs31,PW, O[31], 1'b0, Clk);
+    RF_REGISTER32 R0  (.Q(Qs0), .D(PW), .LE(O[0]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R1  (.Q(Qs1), .D(PW), .LE(O[1]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R2  (.Q(Qs2), .D(PW), .LE(O[2]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R3  (.Q(Qs3), .D(PW), .LE(O[3]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R4  (.Q(Qs4), .D(PW), .LE(O[4]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R5  (.Q(Qs5), .D(PW), .LE(O[5]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R6  (.Q(Qs6), .D(PW), .LE(O[6]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R7  (.Q(Qs7), .D(PW), .LE(O[7]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R8  (.Q(Qs8), .D(PW), .LE(O[8]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R9  (.Q(Qs9), .D(PW), .LE(O[9]),  .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R10 (.Q(Qs10),.D(PW), .LE(O[10]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R11 (.Q(Qs11),.D(PW), .LE(O[11]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R12 (.Q(Qs12),.D(PW), .LE(O[12]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R13 (.Q(Qs13),.D(PW), .LE(O[13]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R14 (.Q(Qs14),.D(PW), .LE(O[14]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R15 (.Q(Qs15),.D(PW), .LE(O[15]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R16 (.Q(Qs16),.D(PW), .LE(O[16]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R17 (.Q(Qs17),.D(PW), .LE(O[17]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R18 (.Q(Qs18),.D(PW), .LE(O[18]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R19 (.Q(Qs19),.D(PW), .LE(O[19]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R20 (.Q(Qs20),.D(PW), .LE(O[20]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R21 (.Q(Qs21),.D(PW), .LE(O[21]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R22 (.Q(Qs22),.D(PW), .LE(O[22]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R23 (.Q(Qs23),.D(PW), .LE(O[23]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R24 (.Q(Qs24),.D(PW), .LE(O[24]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R25 (.Q(Qs25),.D(PW), .LE(O[25]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R26 (.Q(Qs26),.D(PW), .LE(O[26]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R27 (.Q(Qs27),.D(PW), .LE(O[27]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R28 (.Q(Qs28),.D(PW), .LE(O[28]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R29 (.Q(Qs29),.D(PW), .LE(O[29]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R30 (.Q(Qs30),.D(PW), .LE(O[30]), .Clr(1'b0), .Clk(Clk));
+    RF_REGISTER32 R31 (.Q(Qs31),.D(PW), .LE(O[31]), .Clr(1'b0), .Clk(Clk));
 
     // 32x1 MUX First register (R0) is always set to zero as manual dictates
     RF_MUX32x1 MUX_PA (PA, RA, 32'h0, 
