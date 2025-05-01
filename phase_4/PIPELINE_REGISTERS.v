@@ -71,6 +71,7 @@ module ID_EX_REG (
     input wire L_in,
     input wire RF_LE_in,
     input wire UB_in,
+    input wire NEG_COND_in,
 
     // Output Register values and addresses
     output reg [31:0] RA_out,
@@ -91,7 +92,8 @@ module ID_EX_REG (
     output reg [3:0] RAM_CTRL_out,
     output reg L_out,
     output reg RF_LE_out,
-    output reg UB_out
+    output reg UB_out,
+    output reg NEG_COND_out
 );
 
     always @(posedge clk) begin
@@ -114,6 +116,7 @@ module ID_EX_REG (
             L_out <= 0;
             RF_LE_out <= 0;
             UB_out <= 0;
+            NEG_COND_out <= 0;
         end else begin
 
             RA_out <= RA_in;
@@ -133,6 +136,7 @@ module ID_EX_REG (
             L_out <= L_in;
             RF_LE_out <= RF_LE_in;
             UB_out <= UB_in;
+            NEG_COND_out <= NEG_COND_in;
         end
     end
 endmodule

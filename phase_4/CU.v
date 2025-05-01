@@ -10,7 +10,8 @@ module CONTROL_UNIT (
     output reg RF_LE,            // Register File Load Enable
     output reg [1:0] ID_SR,      // 2-bit Instruction Decode Shift Register
     output reg UB,               // Unconditional Branch
-    output reg SHF               // Shift
+    output reg SHF,              // Shift
+    output reg NEG_COND          // Negate condition
 );
     // Second Opcode select for ALU operations
     task  set_alu_op(input [5:0] op2);
@@ -146,6 +147,7 @@ module CONTROL_UNIT (
         ID_SR = 2'b00;
         UB = 0;
         SHF = 0;
+        NEG_COND = 0;
 
         // If instruction is NOP (all bits zero), keep signals at 0
         if (instruction != 32'h00000000) begin
@@ -292,6 +294,7 @@ module CONTROL_UNIT (
                 ID_SR = 2'b11;      // Both registers are in use
                 UB = 0;             // No unconditional branch
                 SHF = 0;            // No shift   
+                NEG_COND = 0;       // Keep condition true
                 end
 
                 6'b100010: begin    // COMBF
@@ -306,6 +309,7 @@ module CONTROL_UNIT (
                 ID_SR = 2'b11;      // Both registers are in use
                 UB = 0;             // No unconditional branch
                 SHF = 0;            // No shift   
+                NEG_COND = 1;       // Negate the condition
                 end
 
                 6'b101101: begin    // ADDI
@@ -366,6 +370,20 @@ module CONTROL_UNIT (
                         SHF = 1;            // Shift   
                         end
                     endcase
+                end
+
+                6'b110101: begin
+                    SRD = 2'b10;        // I[20:16]
+                    PSW_LE_RE = 2'b00;  // N/A
+                    B = 0;              // No branch
+                    SOH_OP = 3'b110;    // shift left
+                    ALU_OP = 4'b1010;   // Pass B
+                    RAM_CTRL = 4'b0000; // No RAM operation
+                    L = 0;              // No load
+                    RF_LE = 1;          // Load result into register
+                    ID_SR = 2'b10;      // B register in use
+                    UB = 0;             // No unconditional branch
+                    SHF = 1;            // Shift   
                 end
 
                 default: ; // unknown opcode → no control

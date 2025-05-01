@@ -98,7 +98,8 @@ module ID (
     output wire L,                     // Select Dataout from RAM
     output wire RF_LE,                 // Register File Load Enable
     output wire [1:0] ID_SR,           // 2-bit Instruction Decode Shift Register
-    output wire UB                     // Unconditional Branch
+    output wire UB,                    // Unconditional Branch
+    output wire NEG_COND               // Negate condition
 );
 
   wire [4:0] RB_SHF_MUX;
@@ -114,6 +115,7 @@ module ID (
   wire CU_RF_LE;
   wire CU_UB;
   wire CU_SHF;
+  wire CU_NEG_COND;
   
   // From Multiplexer of control unit
   wire MUX_SHF;
@@ -133,7 +135,8 @@ module ID (
       .RF_LE(CU_RF_LE),   
       .ID_SR(ID_SR),           // Not pass to MUX
       .UB(CU_UB),
-      .SHF(CU_SHF)
+      .SHF(CU_SHF),
+      .NEG_COND(CU_NEG_COND)
   );
 
   MUX_ID_IDR mux_id_idr (
@@ -157,6 +160,7 @@ module ID (
       .RF_LE_in(CU_RF_LE),
       .UB_in(CU_UB), 
       .SHF_in(CU_SHF), 
+      .NEG_COND_in(CU_NEG_COND), 
 
       .PSW_LE_RE_out(PSW_LE_RE),
       .B_out(B),
@@ -166,7 +170,8 @@ module ID (
       .L_out(L),
       .RF_LE_out(RF_LE),
       .UB_out(UB),
-      .SHF_out(MUX_SHF)
+      .SHF_out(MUX_SHF),
+      .NEG_COND_out(NEG_COND)
   );
 
   MUX_ID_SHF mux_id_shf (
@@ -230,36 +235,46 @@ endmodule
 
 
 module EX (
-  input wire CLK,
+    input wire CLK,
 
-  input wire [7:0] return_address,
-  input wire [7:0] target_address,
-  input wire [31:0] FPA,
-  input wire [31:0] FPB,
-  input wire [2:0]  COND,
-  input wire [20:0] IM,
-  input wire [4:0]  IDR,
+    input wire [7:0] return_address,
+    input wire [7:0] target_address,
+    input wire [31:0] FPA,
+    input wire [31:0] FPB,
+    input wire [2:0]  COND,
+    input wire [20:0] IM,
+    input wire [4:0]  IDR,
 
-  // Control unit signals
-  input wire [1:0] PSW_LE_RE,      
-  input wire B,                     
-  input wire [2:0] SOH_OP,         
-  input wire [3:0] ALU_OP,         
-  input wire [3:0] RAM_CTRL,        
-  input wire L,                    
-  input wire RF_LE,                
-  input wire UB,
+    // Control unit signals
+    input wire [1:0] PSW_LE_RE,      
+    input wire B,                     
+    input wire [2:0] SOH_OP,         
+    input wire [3:0] ALU_OP,         
+    input wire [3:0] RAM_CTRL,        
+    input wire L,                    
+    input wire RF_LE,                
+    input wire UB,
+    input wire NEG_COND,
 
-  output wire EX_J,                   
-  output wire [7:0] TARGET_ADDRESS,
-  output wire [31:0] EX_OUT,                   
-  output wire [31:0] EX_DI,                   
-  output wire [4:0]  EX_RD,                   
-  output wire EX_L,                   
-  output wire EX_RF_LE, 
-  output wire [3:0] RAM_CTRL_OUT 
+    output wire EX_J,                   
+    output wire [7:0] TARGET_ADDRESS,
+    output wire [31:0] EX_OUT,                   
+    output wire [31:0] EX_DI,                   
+    output wire [4:0]  EX_RD,                   
+    output wire EX_L,                   
+    output wire EX_RF_LE, 
+    output wire [3:0] RAM_CTRL_OUT,
+
+    // For testing
+    output wire CH_B,
+    output wire CH_Odd,
+    output wire CH_Z,
+    output wire CH_N,
+    output wire CH_C,
+    output wire CH_V,
+    output wire [2:0] CH_Cond,
+    output wire CH_J
 );
-
     assign EX_L = L;
     assign EX_RF_LE = RF_LE;
     assign EX_DI = FPB;
@@ -297,7 +312,8 @@ module EX (
         .V(V)     
     );
 
-    CH condition_handler (
+    CH cu (
+        .NEG_COND(NEG_COND),
         .B(B),   
         .Odd(ALU_OUT[0]), 
         .Z(Z), 
@@ -329,6 +345,15 @@ module EX (
         .O(EX_OUT)
     );
 
+
+  assign CH_B = B;
+  assign CH_Odd = ALU_OUT[0];
+  assign CH_Z = Z;
+  assign CH_N = N;
+  assign CH_C = C;
+  assign CH_V = V;
+  assign CH_Cond = COND;
+  assign CH_J = J;
 endmodule
 
 module MEM (

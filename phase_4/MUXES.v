@@ -10,6 +10,7 @@ module MUX_CU (
     input wire RF_LE_in,
     input wire UB_in,
     input wire SHF_in,
+    input wire NEG_COND_in,
 
     output reg [1:0] PSW_LE_RE_out,
     output reg B_out,
@@ -19,7 +20,8 @@ module MUX_CU (
     output reg L_out,
     output reg RF_LE_out,
     output reg UB_out,
-    output reg SHF_out
+    output reg SHF_out,
+    output reg NEG_COND_out
 );
 
     always @(*) begin
@@ -33,6 +35,7 @@ module MUX_CU (
             RF_LE_out = 1'b0;
             UB_out = 1'b0;
             SHF_out = 1'b0;
+            NEG_COND_out = 1'b0;
         end else begin
             PSW_LE_RE_out = PSW_LE_RE_in;
             B_out = B_in;
@@ -43,6 +46,7 @@ module MUX_CU (
             RF_LE_out = RF_LE_in;
             UB_out = UB_in;
             SHF_out = SHF_in;
+            NEG_COND_out = NEG_COND_in;
         end
     end
 endmodule

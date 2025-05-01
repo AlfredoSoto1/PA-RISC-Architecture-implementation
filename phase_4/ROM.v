@@ -9,8 +9,8 @@ module ROM (
     // Precarga de la memoria desde un archivo de texto externo 
     initial begin
         // $readmemb("test_1_instructions.txt", Mem);
-        // $readmemb("test_2_instructions.txt", Mem);
-        $readmemb("test_3_instructions.txt", Mem);
+        $readmemb("test_2_instructions.txt", Mem);
+        // $readmemb("test_3_instructions.txt", Mem);
     end
 
     // Lectura de una instrucción completa (word) en big-endian

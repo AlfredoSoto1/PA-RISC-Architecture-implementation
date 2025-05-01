@@ -71,6 +71,7 @@ module CPU_PIPELINE (
     wire ID_L;                     // Select Dataout from RAM
     wire ID_RF_LE;                 // Register File Load Enable
     wire ID_UB; 
+    wire ID_NEG_COND; 
 
     ID id_stage (
         .CLK(CLK),
@@ -107,7 +108,8 @@ module CPU_PIPELINE (
         .L(ID_L),         
         .RF_LE(ID_RF_LE),     
         .ID_SR(ID_SR),     
-        .UB(ID_UB)        
+        .UB(ID_UB),        
+        .NEG_COND(ID_NEG_COND)        
     );
 
     //
@@ -130,6 +132,7 @@ module CPU_PIPELINE (
     wire EX_L;                    
     wire EX_RF_LE;               
     wire EX_UB;
+    wire EX_NEG_COND;
 
     // EX outputs
     wire [31:0] EX_DI;                   
@@ -162,6 +165,7 @@ module CPU_PIPELINE (
         .L_in(ID_L),
         .RF_LE_in(ID_RF_LE),
         .UB_in(ID_UB),
+        .NEG_COND_in(ID_NEG_COND),
 
         // Outputs Register values and addresses
         .RA_out(EX_FPA),
@@ -182,7 +186,8 @@ module CPU_PIPELINE (
         .RAM_CTRL_out(EX_RAM_CTRL),
         .L_out(EX_L),
         .RF_LE_out(EX_RF_LE),
-        .UB_out(EX_UB)
+        .UB_out(EX_UB),
+        .NEG_COND_out(EX_NEG_COND)
     );
 
     EX ex_stage (
@@ -205,6 +210,7 @@ module CPU_PIPELINE (
         .L(EX_L),                    
         .RF_LE(EX_RF_LE),                
         .UB(EX_UB),
+        .NEG_COND(EX_NEG_COND),
 
         // Outputs
         .EX_J(J),                   
@@ -382,29 +388,29 @@ module tb_CPU_PIPELINE;
         //     uut.id_stage.reg_file.R5.Q
         // );
 
-        // // Monitor for test #2 (Validation program)
-        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR4: %d | GR5: %d | GR10: %d | GR11: %d | GR12: %d | GR14: %d",
-        //     uut.if_stage.front_q,
-        //     uut.id_stage.reg_file.R1.Q,
-        //     uut.id_stage.reg_file.R2.Q,
-        //     uut.id_stage.reg_file.R3.Q,
-        //     uut.id_stage.reg_file.R4.Q,
-        //     uut.id_stage.reg_file.R5.Q,
-        //     uut.id_stage.reg_file.R10.Q,
-        //     uut.id_stage.reg_file.R11.Q,
-        //     uut.id_stage.reg_file.R12.Q,
-        //     uut.id_stage.reg_file.R14.Q
-        // );
-
-        // Monitor for test #3 (Validation program)
-        $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+        // Monitor for test #2 (Validation program)
+        $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR4: %d | GR5: %d | GR10: %d | GR11: %d | GR12: %d | GR14: %d",
             uut.if_stage.front_q,
             uut.id_stage.reg_file.R1.Q,
             uut.id_stage.reg_file.R2.Q,
             uut.id_stage.reg_file.R3.Q,
+            uut.id_stage.reg_file.R4.Q,
             uut.id_stage.reg_file.R5.Q,
-            uut.id_stage.reg_file.R6.Q
+            uut.id_stage.reg_file.R10.Q,
+            uut.id_stage.reg_file.R11.Q,
+            uut.id_stage.reg_file.R12.Q,
+            uut.id_stage.reg_file.R14.Q
         );
+
+        // Monitor for test #3 (Validation program)
+        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+        //     uut.if_stage.front_q,
+        //     uut.id_stage.reg_file.R1.Q,
+        //     uut.id_stage.reg_file.R2.Q,
+        //     uut.id_stage.reg_file.R3.Q,
+        //     uut.id_stage.reg_file.R5.Q,
+        //     uut.id_stage.reg_file.R6.Q
+        // );
 
 
         // $monitor("Front: %d | DI %b | DO %b | EX_OUT %b | MEM_OUT %b",
@@ -447,6 +453,31 @@ module tb_CPU_PIPELINE;
         //     uut.dhdu.LE,
         //     uut.dhdu.A_S,
         //     uut.dhdu.B_S
+        // );
+
+        // $monitor("Front: %d | TA %b | UB %b |B %b | ODD %b | Z %b | N %b | C %b | V %b | COND %b | J %b",
+        //     uut.if_stage.front_q, 
+        //     uut.ex_stage.TARGET_ADDRESS,
+        //     uut.ex_stage.UB,
+        //     uut.ex_stage.CH_B,
+        //     uut.ex_stage.CH_Odd,
+        //     uut.ex_stage.CH_Z,
+        //     uut.ex_stage.CH_N,
+        //     uut.ex_stage.CH_C,
+        //     uut.ex_stage.CH_V,
+        //     uut.ex_stage.CH_Cond,
+        //     uut.ex_stage.CH_J
+        // );
+
+        // $monitor("Front: %d | FPA %b | FPB %b | EX_RD %b | EX_OUT %b | EX_DI %b | SOH_OP %b | ALU_OP %b",
+        //     uut.if_stage.front_q, 
+        //     uut.ex_stage.FPA,
+        //     uut.ex_stage.FPB,
+        //     uut.ex_stage.EX_RD,
+        //     uut.ex_stage.EX_OUT,
+        //     uut.ex_stage.EX_DI,
+        //     uut.ex_stage.SOH_OP,
+        //     uut.ex_stage.ALU_OP
         // );
     end
 

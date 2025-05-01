@@ -12,8 +12,8 @@ module RAM256x8 (
     // Precarga de memoria desde un archivo de texto
     initial begin
         // $readmemb("test_1_instructions.txt", Mem);
-        // $readmemb("test_2_instructions.txt", Mem);
-        $readmemb("test_3_instructions.txt", Mem);
+        $readmemb("test_2_instructions.txt", Mem);
+        // $readmemb("test_3_instructions.txt", Mem);
     end
 
     always @(*) begin

@@ -1,4 +1,5 @@
 module CH (
+    input wire NEG_COND,    // Negate condition
     input wire B,           // Branch instruction
     input wire Odd,         // Odd Result
     input wire Z, N, C, V,  // ALU Flags  
@@ -18,6 +19,8 @@ module CH (
             3'b110: J = V;              // GR[r1] - GR[r2] overflows (unsigned)
             3'b111: J = Odd;            // GR[r1] - GR[r2] is odd
         endcase
+
+        J = NEG_COND == 1 ? ~J : J;
 
         if (B == 0) begin
             J = 0; // No Jump
