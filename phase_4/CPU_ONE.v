@@ -11,8 +11,8 @@ module ROM (
     // Precarga de la memoria desde un archivo de texto externo 
     initial begin
         // $readmemb("test_1_instructions.txt", Mem);
-        $readmemb("test_2_instructions.txt", Mem);
-        // $readmemb("test_3_instructions.txt", Mem);
+        // $readmemb("test_2_instructions.txt", Mem);
+        $readmemb("test_3_instructions.txt", Mem);
     end
 
     // Lectura de una instrucción completa (word) en big-endian
@@ -38,8 +38,8 @@ module RAM256x8 (
     // Precarga de memoria desde un archivo de texto
     initial begin
         // $readmemb("test_1_instructions.txt", Mem);
-        $readmemb("test_2_instructions.txt", Mem);
-        // $readmemb("test_3_instructions.txt", Mem);
+        // $readmemb("test_2_instructions.txt", Mem);
+        $readmemb("test_3_instructions.txt", Mem);
     end
 
     always @(*) begin
@@ -652,7 +652,7 @@ module CONTROL_UNIT (
                 PSW_LE_RE = 2'b01;  // Load enabled
                 B = 0;              // No branch
                 SOH_OP = 3'b001;    // low_sign_ext(im11)
-                ALU_OP = 4'b0100;   // B - A
+                ALU_OP = 4'b0010;   // (B - A) changed to A - B
                 RAM_CTRL = 4'b0000; // No RAM operation
                 L = 0;              // No load
                 RF_LE = 1;          // Load result into register
@@ -663,7 +663,7 @@ module CONTROL_UNIT (
 
                 6'b110100: begin
                     case (instruction[12:10])
-                        3'b110: begin       // EXTRS
+                        3'b111: begin       // EXTRS
                         SRD = 2'b10;        // I[20:16]
                         PSW_LE_RE = 2'b00;  // N/A
                         B = 0;              // No branch
@@ -677,7 +677,7 @@ module CONTROL_UNIT (
                         SHF = 1;            // Shift   
                         end
 
-                        3'b111: begin       // EXTRU
+                        3'b110: begin       // EXTRU
                         SRD = 2'b10;        // I[20:16]
                         PSW_LE_RE = 2'b00;  // N/A
                         B = 0;              // No branch
@@ -2148,14 +2148,14 @@ module tb_CPU_PIPELINE;
         // );
 
         // Monitor for test #3 (Validation program)
-        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
-        //     uut.if_stage.front_q,
-        //     uut.id_stage.reg_file.R1.Q,
-        //     uut.id_stage.reg_file.R2.Q,
-        //     uut.id_stage.reg_file.R3.Q,
-        //     uut.id_stage.reg_file.R5.Q,
-        //     uut.id_stage.reg_file.R6.Q
-        // );
+        $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
+            uut.if_stage.front_q,
+            uut.id_stage.reg_file.R1.Q,
+            uut.id_stage.reg_file.R2.Q,
+            uut.id_stage.reg_file.R3.Q,
+            uut.id_stage.reg_file.R5.Q,
+            uut.id_stage.reg_file.R6.Q
+        );
 
 
         // $monitor("Front: %d | DI %b | DO %b | EX_OUT %b | MEM_OUT %b",
@@ -2214,16 +2214,16 @@ module tb_CPU_PIPELINE;
         //     uut.ex_stage.CH_J
         // );
 
-        $monitor("Front: %d | FPA %b | FPB %b | EX_RD %b | EX_OUT %b | EX_DI %b | SOH_OP %b | ALU_OP %b",
-            uut.if_stage.front_q, 
-            uut.ex_stage.FPA,
-            uut.ex_stage.FPB,
-            uut.ex_stage.EX_RD,
-            uut.ex_stage.EX_OUT,
-            uut.ex_stage.EX_DI,
-            uut.ex_stage.SOH_OP,
-            uut.ex_stage.ALU_OP
-        );
+        // $monitor("Front: %d | FPA %b | FPB %b | EX_RD %b | EX_OUT %b | EX_DI %b | SOH_OP %b | ALU_OP %b",
+        //     uut.if_stage.front_q, 
+        //     uut.ex_stage.FPA,
+        //     uut.ex_stage.FPB,
+        //     uut.ex_stage.EX_RD,
+        //     uut.ex_stage.EX_OUT,
+        //     uut.ex_stage.EX_DI,
+        //     uut.ex_stage.SOH_OP,
+        //     uut.ex_stage.ALU_OP
+        // );
     end
 
 endmodule
