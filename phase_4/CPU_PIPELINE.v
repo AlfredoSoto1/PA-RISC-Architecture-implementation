@@ -389,20 +389,20 @@ module tb_CPU_PIPELINE;
         // );
 
         // Monitor for test #2 (Validation program)
-        // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR4: %d | GR5: %d | GR10: %d | GR11: %d | GR12: %d | GR14: %d",
-        //     uut.if_stage.front_q,
-        //     uut.id_stage.reg_file.R1.Q_S,
-        //     uut.id_stage.reg_file.R2.Q_S,
-        //     uut.id_stage.reg_file.R3.Q_S,
-        //     uut.id_stage.reg_file.R4.Q_S,
-        //     uut.id_stage.reg_file.R5.Q_S,
-        //     uut.id_stage.reg_file.R10.Q_S,
-        //     uut.id_stage.reg_file.R11.Q_S,
-        //     uut.id_stage.reg_file.R12.Q_S,
-        //     uut.id_stage.reg_file.R14.Q_S
-        // );
+        $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR4: %d | GR5: %d | GR10: %d | GR11: %d | GR12: %d | GR14: %d",
+            uut.if_stage.front_q,
+            uut.id_stage.reg_file.R1.Q_S,
+            uut.id_stage.reg_file.R2.Q_S,
+            uut.id_stage.reg_file.R3.Q_S,
+            uut.id_stage.reg_file.R4.Q_S,
+            uut.id_stage.reg_file.R5.Q_S,
+            uut.id_stage.reg_file.R10.Q_S,
+            uut.id_stage.reg_file.R11.Q_S,
+            uut.id_stage.reg_file.R12.Q_S,
+            uut.id_stage.reg_file.R14.Q_S
+        );
 
-        // Monitor for test #3 (Validation program)
+        // // Monitor for test #3 (Validation program)
         // $monitor("Front: %d | GR1: %d | GR2: %d | GR3: %d | GR5: %d | GR6: %d",
         //     uut.if_stage.front_q,
         //     uut.id_stage.reg_file.R1.Q,
@@ -469,16 +469,16 @@ module tb_CPU_PIPELINE;
         //     uut.ex_stage.CH_J
         // );
 
-        $monitor("Front: %d | FPA %b | FPB %b | EX_RD %b | EX_OUT %b | EX_DI %b | SOH_OP %b | ALU_OP %b",
-            uut.if_stage.front_q, 
-            uut.ex_stage.FPA,
-            uut.ex_stage.FPB,
-            uut.ex_stage.EX_RD,
-            uut.ex_stage.EX_OUT,
-            uut.ex_stage.EX_DI,
-            uut.ex_stage.SOH_OP,
-            uut.ex_stage.ALU_OP
-        );
+        // $monitor("Front: %d | FPA %b | FPB %b | EX_RD %b | EX_OUT %b | EX_DI %b | SOH_OP %b | ALU_OP %b",
+        //     uut.if_stage.front_q, 
+        //     uut.ex_stage.FPA,
+        //     uut.ex_stage.FPB,
+        //     uut.ex_stage.EX_RD,
+        //     uut.ex_stage.EX_OUT,
+        //     uut.ex_stage.EX_DI,
+        //     uut.ex_stage.SOH_OP,
+        //     uut.ex_stage.ALU_OP
+        // );
     end
 
 endmodule

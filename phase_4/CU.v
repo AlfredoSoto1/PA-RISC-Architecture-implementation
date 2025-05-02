@@ -342,7 +342,7 @@ module CONTROL_UNIT (
 
                 6'b110100: begin
                     case (instruction[12:10])
-                        3'b110: begin       // EXTRS
+                        3'b111: begin       // EXTRS
                         SRD = 2'b10;        // I[20:16]
                         PSW_LE_RE = 2'b00;  // N/A
                         B = 0;              // No branch
@@ -356,7 +356,7 @@ module CONTROL_UNIT (
                         SHF = 1;            // Shift   
                         end
 
-                        3'b111: begin       // EXTRU
+                        3'b110: begin       // EXTRU
                         SRD = 2'b10;        // I[20:16]
                         PSW_LE_RE = 2'b00;  // N/A
                         B = 0;              // No branch
